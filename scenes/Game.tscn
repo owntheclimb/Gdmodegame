@@ -1,14 +1,12 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/World.tscn" id="1_xv4j4"]
 [ext_resource type="PackedScene" path="res://scenes/Villager.tscn" id="2_1hh3x"]
 [ext_resource type="PackedScene" path="res://scenes/BerryBush.tscn" id="3_6d4l6"]
 [ext_resource type="PackedScene" path="res://scenes/Rock.tscn" id="4_3k2n2"]
-[ext_resource type="PackedScene" path="res://scenes/TaskBoard.tscn" id="5_1hvwf"]
-[ext_resource type="PackedScene" path="res://scenes/EventLocation.tscn" id="6_eh1t0"]
-[ext_resource type="Script" path="res://scripts/event_manager.gd" id="7_31p6n"]
-[ext_resource type="Script" path="res://scripts/game_state.gd" id="8_3dr42"]
-[ext_resource type="Script" path="res://scripts/event_notifications.gd" id="9_bkpux"]
+[ext_resource type="PackedScene" path="res://scenes/TaskBoard.tscn" id="5_dioqb"]
+[ext_resource type="PackedScene" path="res://scenes/ConstructionSite.tscn" id="6_xm8a0"]
+[ext_resource type="Resource" path="res://resources/hut_blueprint.tres" id="7_q3gik"]
 
 [node name="Game" type="Node2D"]
 
@@ -16,6 +14,12 @@
 script = ExtResource("8_3dr42")
 
 [node name="World" parent="." instance=ExtResource("1_xv4j4")]
+
+[node name="TaskBoard" parent="." instance=ExtResource("5_dioqb")]
+
+[node name="ConstructionSite" parent="." instance=ExtResource("6_xm8a0")]
+position = Vector2(220, 260)
+blueprint = ExtResource("7_q3gik")
 
 [node name="Villager" parent="." instance=ExtResource("2_1hh3x")]
 position = Vector2(200, 200)

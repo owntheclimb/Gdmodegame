@@ -95,7 +95,18 @@ func is_walkable_world(world_position: Vector2) -> bool:
 		return false
 	return chunk.is_walkable(local_coord)
 
-func _setup_tileset() -> TileSet:
+func spawn_construction_site(site_scene: PackedScene, position: Vector2, blueprint: Blueprint) -> ConstructionSite:
+	if not site_scene:
+		return null
+	var site := site_scene.instantiate()
+	if site is Node2D:
+		site.global_position = position
+	add_child(site)
+	if site.has_method("assign_blueprint"):
+		site.assign_blueprint(blueprint)
+	return site
+
+func _setup_tileset() -> void:
 	var image := Image.create(tile_size * 3, tile_size, false, Image.FORMAT_RGBA8)
 	image.fill(Color(0, 0, 0, 0))
 	image.fill_rect(Rect2i(0, 0, tile_size, tile_size), Color(0.1, 0.35, 0.8))
