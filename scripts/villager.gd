@@ -10,7 +10,7 @@ enum State { IDLE, WANDER, WORKING, DRAGGED, ROMANCE, EAT }
 
 var state: State = State.IDLE
 var target_position: Vector2
-var current_task := ""
+var current_task: Task
 
 var _idle_timer := 0.0
 var _idle_interval := 2.0
@@ -51,10 +51,14 @@ func _handle_idle(delta: float) -> void:
 	if hunger < 30.0:
 		var bush := _find_nearest_berry_bush()
 		if bush:
-			current_task = "Eat"
+			current_task = null
 			state = State.EAT
 			target_position = bush.global_position
 			return
+
+	request_task()
+	if state == State.WORKING:
+		return
 
 	var world := _get_world()
 	if not world:
@@ -83,7 +87,10 @@ func _finish_task_on_arrival() -> void:
 			if bush and bush.global_position.distance_to(global_position) < 10.0:
 				hunger = min(hunger + bush.consume(), 100.0)
 		State.ROMANCE:
-			current_task = ""
+			current_task = null
+		State.WORKING:
+			_handle_task_action()
+			complete_task()
 	state = State.IDLE
 
 func _find_nearest_berry_bush() -> Node2D:
@@ -112,10 +119,13 @@ func _handle_drop() -> bool:
 
 	for area in overlapping_areas:
 		if area.is_in_group("rock"):
-			current_task = "Clearing Rubble"
-			state = State.WORKING
-			target_position = area.global_position
-			return true
+			var task_board := _get_task_board()
+			if task_board:
+				var task := task_board.add_task_from_world_object(area, "clear_rock", 6)
+				if task and task_board.claim_task(task, self):
+					_assign_task(task)
+					return true
+			return false
 
 	for body in overlapping_bodies:
 		if body == self:
@@ -139,19 +149,69 @@ func _can_romance_with(other: Node) -> bool:
 	return gender != other.gender
 
 func start_romance(partner: Node2D) -> void:
-	current_task = "Romance"
+	current_task = null
 	state = State.ROMANCE
 	target_position = partner.global_position
 	if partner.has_method("receive_romance"):
 		partner.receive_romance(global_position)
 
 func receive_romance(partner_position: Vector2) -> void:
-	current_task = "Romance"
+	current_task = null
 	state = State.ROMANCE
 	target_position = partner_position
 
 func _get_world() -> Node:
 	return get_tree().get_first_node_in_group("world")
+
+func _get_task_board() -> TaskBoard:
+	return get_tree().get_first_node_in_group("task_board") as TaskBoard
+
+func request_task() -> void:
+	var task_board := _get_task_board()
+	if not task_board:
+		return
+	var task := task_board.request_task(self)
+	if task:
+		_assign_task(task)
+
+func _assign_task(task: Task) -> void:
+	current_task = task
+	state = State.WORKING
+	target_position = _get_task_target_position(task)
+
+func _get_task_target_position(task: Task) -> Vector2:
+	if not task:
+		return global_position
+	if task.target_node_path != NodePath():
+		var target_node := get_tree().root.get_node_or_null(task.target_node_path) as Node2D
+		if target_node:
+			return target_node.global_position
+	return task.target_world_position
+
+func _handle_task_action() -> void:
+	if not current_task:
+		return
+	var target_node := _get_task_target_node(current_task)
+	match current_task.task_type:
+		"harvest_berries":
+			if target_node and target_node.has_method("consume"):
+				hunger = min(hunger + target_node.consume(), 100.0)
+		"clear_rock":
+			if target_node:
+				target_node.queue_free()
+
+func _get_task_target_node(task: Task) -> Node2D:
+	if not task or task.target_node_path == NodePath():
+		return null
+	return get_tree().root.get_node_or_null(task.target_node_path) as Node2D
+
+func complete_task() -> void:
+	if not current_task:
+		return
+	var task_board := _get_task_board()
+	if task_board:
+		task_board.complete_task(current_task)
+	current_task = null
 
 func _setup_placeholder_sprite() -> void:
 	if sprite.texture:
