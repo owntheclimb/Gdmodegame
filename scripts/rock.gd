@@ -1,8 +1,9 @@
-extends Area2D
+extends StoneResource
 
 @onready var sprite: Sprite2D = $Sprite
 
 func _ready() -> void:
+	super._ready()
 	add_to_group("rock")
 	_setup_placeholder_sprite()
 
