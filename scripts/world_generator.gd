@@ -34,13 +34,28 @@ func _tile_from_noise(value: float) -> int:
 		return TILE_SAND
 	return TILE_GRASS
 
-func is_walkable(tile_coord: Vector2i) -> bool:
+func get_tile_type(tile_coord: Vector2i) -> int:
 	var atlas_coords := tile_map.get_cell_atlas_coords(0, tile_coord)
-	return atlas_coords.x != TILE_WATER
+	return atlas_coords.x
 
-func is_walkable_world(world_position: Vector2) -> bool:
+func get_tile_type_world(world_position: Vector2) -> int:
 	var tile_coord := tile_map.local_to_map(tile_map.to_local(world_position))
-	return is_walkable(tile_coord)
+	return get_tile_type(tile_coord)
+
+func is_water_world(world_position: Vector2) -> bool:
+	return get_tile_type_world(world_position) == TILE_WATER
+
+func is_walkable(tile_coord: Vector2i, allow_water := true) -> bool:
+	var tile_type := get_tile_type(tile_coord)
+	if tile_type == -1:
+		return false
+	if tile_type == TILE_WATER and not allow_water:
+		return false
+	return true
+
+func is_walkable_world(world_position: Vector2, allow_water := true) -> bool:
+	var tile_coord := tile_map.local_to_map(tile_map.to_local(world_position))
+	return is_walkable(tile_coord, allow_water)
 
 func _setup_tileset() -> void:
 	var image := Image.create(tile_size * 3, tile_size, false, Image.FORMAT_RGBA8)
