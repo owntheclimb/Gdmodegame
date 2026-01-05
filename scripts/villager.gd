@@ -16,10 +16,12 @@ var _idle_timer := 0.0
 var _idle_interval := 2.0
 
 @onready var drop_detector: Area2D = $DropDetector
+@onready var sprite: Sprite2D = $Sprite
 
 func _ready() -> void:
 	randomize()
 	add_to_group("villager")
+	_setup_placeholder_sprite()
 	state = State.IDLE
 
 func _physics_process(delta: float) -> void:
@@ -100,10 +102,11 @@ func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> vo
 		if event.pressed:
 			state = State.DRAGGED
 		else:
-			_handle_drop()
-			state = State.IDLE
+			var drop_handled := _handle_drop()
+			if not drop_handled:
+				state = State.IDLE
 
-func _handle_drop() -> void:
+func _handle_drop() -> bool:
 	var overlapping_areas := drop_detector.get_overlapping_areas()
 	var overlapping_bodies := drop_detector.get_overlapping_bodies()
 
@@ -112,7 +115,7 @@ func _handle_drop() -> void:
 			current_task = "Clearing Rubble"
 			state = State.WORKING
 			target_position = area.global_position
-			return
+			return true
 
 	for body in overlapping_bodies:
 		if body == self:
@@ -120,7 +123,9 @@ func _handle_drop() -> void:
 		if body.is_in_group("villager"):
 			if _can_romance_with(body):
 				start_romance(body)
-				return
+				return true
+
+	return false
 
 func _can_romance_with(other: Node) -> bool:
 	if not other:
@@ -147,3 +152,11 @@ func receive_romance(partner_position: Vector2) -> void:
 
 func _get_world() -> Node:
 	return get_tree().get_first_node_in_group("world")
+
+func _setup_placeholder_sprite() -> void:
+	if sprite.texture:
+		return
+	var image := Image.create(16, 20, false, Image.FORMAT_RGBA8)
+	image.fill(Color(0.9, 0.8, 0.6))
+	var texture := ImageTexture.create_from_image(image)
+	sprite.texture = texture
