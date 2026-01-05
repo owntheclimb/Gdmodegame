@@ -16,7 +16,8 @@ func _ready() -> void:
 	tileset = _setup_tileset()
 	noise.seed = randi()
 	noise.frequency = 0.04
-	_update_loaded_chunks()
+	_generate_map()
+	_update_game_state_biome()
 
 func _process(_delta: float) -> void:
 	_update_loaded_chunks()
@@ -112,5 +113,24 @@ func _setup_tileset() -> TileSet:
 	atlas_source.create_tile(Vector2i(1, 0))
 	atlas_source.create_tile(Vector2i(2, 0))
 
-	new_tileset.add_source(atlas_source, 0)
-	return new_tileset
+	tileset.add_source(atlas_source, 0)
+	tile_map.tile_set = tileset
+
+func get_random_walkable_position(max_attempts := 60) -> Vector2:
+	for _i in max_attempts:
+		var coord := Vector2i(randi_range(0, map_width - 1), randi_range(0, map_height - 1))
+		if is_walkable(coord):
+			var local := tile_map.map_to_local(coord)
+			local += Vector2(tile_size / 2.0, tile_size / 2.0)
+			return tile_map.to_global(local)
+	return Vector2.ZERO
+
+func _update_game_state_biome() -> void:
+	var center := Vector2i(map_width / 2, map_height / 2)
+	var atlas_coords := tile_map.get_cell_atlas_coords(0, center)
+	var biome := "grassland"
+	if atlas_coords.x == TILE_WATER or atlas_coords.x == TILE_SAND:
+		biome = "coastal"
+	var game_state := get_tree().get_first_node_in_group("game_state")
+	if game_state:
+		game_state.current_biome = biome
