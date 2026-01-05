@@ -1,14 +1,14 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=7 format=3]
 
+[ext_resource type="Script" path="res://scripts/game.gd" id="1_0u2dp"]
 [ext_resource type="PackedScene" path="res://scenes/World.tscn" id="1_xv4j4"]
 [ext_resource type="PackedScene" path="res://scenes/Villager.tscn" id="2_1hh3x"]
 [ext_resource type="PackedScene" path="res://scenes/BerryBush.tscn" id="3_6d4l6"]
 [ext_resource type="PackedScene" path="res://scenes/Rock.tscn" id="4_3k2n2"]
-[ext_resource type="PackedScene" path="res://scenes/TaskBoard.tscn" id="5_dioqb"]
-[ext_resource type="PackedScene" path="res://scenes/ConstructionSite.tscn" id="6_xm8a0"]
-[ext_resource type="Resource" path="res://resources/hut_blueprint.tres" id="7_q3gik"]
+[ext_resource type="Script" path="res://scripts/storage.gd" id="5_1hwdm"]
 
 [node name="Game" type="Node2D"]
+script = ExtResource("1_0u2dp")
 
 [node name="GameState" type="Node" parent="."]
 script = ExtResource("8_3dr42")
@@ -34,29 +34,23 @@ position = Vector2(300, 240)
 [node name="Rock" parent="." instance=ExtResource("4_3k2n2")]
 position = Vector2(340, 220)
 
-[node name="TaskBoard" parent="." instance=ExtResource("5_1hvwf")]
+[node name="Storage" type="Node2D" parent="."]
+position = Vector2(240, 160)
+script = ExtResource("5_1hwdm")
 
-[node name="EventManager" type="Node" parent="."]
-script = ExtResource("7_31p6n")
-event_location_scene = ExtResource("6_eh1t0")
+[node name="UI" type="CanvasLayer" parent="."]
 
-[node name="EventNotifications" type="CanvasLayer" parent="."]
-script = ExtResource("9_bkpux")
+[node name="StoragePanel" type="VBoxContainer" parent="UI"]
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 200.0
+offset_bottom = 72.0
 
-[node name="Panel" type="Panel" parent="EventNotifications"]
-anchors_preset = 0
-anchor_right = 0.35
-anchor_bottom = 0.25
-offset_right = 0.0
-offset_bottom = 0.0
+[node name="FoodLabel" type="Label" parent="UI/StoragePanel"]
+text = "Food: 0"
 
-[node name="MarginContainer" type="MarginContainer" parent="EventNotifications/Panel"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 6.0
-offset_top = 6.0
-offset_right = -6.0
-offset_bottom = -6.0
+[node name="WoodLabel" type="Label" parent="UI/StoragePanel"]
+text = "Wood: 0"
 
-[node name="MessageList" type="VBoxContainer" parent="EventNotifications/Panel/MarginContainer"]
+[node name="StoneLabel" type="Label" parent="UI/StoragePanel"]
+text = "Stone: 0"
