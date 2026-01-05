@@ -6,6 +6,9 @@ signal task_completed(task: Task)
 
 var _tasks: Array[Task] = []
 
+func _ready() -> void:
+	add_to_group("task_board")
+
 func add_task(task: Task) -> void:
 	_tasks.append(task)
 	task_added.emit(task)
