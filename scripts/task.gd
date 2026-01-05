@@ -7,20 +7,19 @@ enum TaskStatus { OPEN, CLAIMED, COMPLETE }
 @export var task_type := ""
 @export var priority := 0
 @export var target_world_position := Vector2.ZERO
+@export var required_tags: Array[String] = []
+@export var expires_at := -1.0
+@export var claim_cooldown := 0.0
 @export var target_node_path: NodePath
+@export var payload: Dictionary = {}
 @export var status := TaskStatus.OPEN
 @export var assigned_villager_path: NodePath
+var last_claimed_at := -INF
 
 func assign_to(villager: Node) -> void:
 	status = TaskStatus.CLAIMED
 	assigned_villager_path = villager.get_path()
+	last_claimed_at = Time.get_ticks_msec() / 1000.0
 
 func mark_complete() -> void:
 	status = TaskStatus.COMPLETE
-
-func get_target_position(tree: SceneTree) -> Vector2:
-	if target_node_path != NodePath():
-		var node := tree.get_root().get_node_or_null(target_node_path)
-		if node and node is Node2D:
-			return node.global_position
-	return target_world_position

@@ -1,46 +1,54 @@
 extends Node2D
 
-@export var map_width := 100
-@export var map_height := 100
 @export var tile_size := 16
+@export var chunk_size := 32
+@export var render_distance := 2
 
-@onready var tile_map: TileMap = $TileMap
-
-const TILE_WATER := 0
-const TILE_SAND := 1
-const TILE_GRASS := 2
+const WorldChunk := preload("res://scripts/world_chunk.gd")
 
 var noise := FastNoiseLite.new()
+var tileset: TileSet
+var loaded_chunks: Dictionary = {}
 
 func _ready() -> void:
 	add_to_group("world")
 	randomize()
-	_setup_tileset()
+	tileset = _setup_tileset()
 	noise.seed = randi()
 	noise.frequency = 0.04
 	_generate_map()
+	_update_game_state_biome()
 
-func _generate_map() -> void:
-	for x in map_width:
-		for y in map_height:
-			var value := noise.get_noise_2d(x, y)
-			var tile_id := _tile_from_noise(value)
-			tile_map.set_cell(0, Vector2i(x, y), 0, Vector2i(tile_id, 0))
+func _process(_delta: float) -> void:
+	_update_loaded_chunks()
 
-func _tile_from_noise(value: float) -> int:
-	if value < 0.2:
-		return TILE_WATER
-	if value < 0.4:
-		return TILE_SAND
-	return TILE_GRASS
+func _update_loaded_chunks() -> void:
+	var focus_position := _get_focus_position()
+	var center_chunk := _world_to_chunk(focus_position)
+	var desired_chunks: Dictionary = {}
 
-func is_walkable(tile_coord: Vector2i) -> bool:
+func get_tile_type(tile_coord: Vector2i) -> int:
 	var atlas_coords := tile_map.get_cell_atlas_coords(0, tile_coord)
-	return atlas_coords.x != TILE_WATER
+	return atlas_coords.x
 
-func is_walkable_world(world_position: Vector2) -> bool:
+func get_tile_type_world(world_position: Vector2) -> int:
 	var tile_coord := tile_map.local_to_map(tile_map.to_local(world_position))
-	return is_walkable(tile_coord)
+	return get_tile_type(tile_coord)
+
+func is_water_world(world_position: Vector2) -> bool:
+	return get_tile_type_world(world_position) == TILE_WATER
+
+func is_walkable(tile_coord: Vector2i, allow_water := true) -> bool:
+	var tile_type := get_tile_type(tile_coord)
+	if tile_type == -1:
+		return false
+	if tile_type == TILE_WATER and not allow_water:
+		return false
+	return true
+
+func is_walkable_world(world_position: Vector2, allow_water := true) -> bool:
+	var tile_coord := tile_map.local_to_map(tile_map.to_local(world_position))
+	return is_walkable(tile_coord, allow_water)
 
 func _setup_tileset() -> void:
 	var image := Image.create(tile_size * 3, tile_size, false, Image.FORMAT_RGBA8)
@@ -50,8 +58,8 @@ func _setup_tileset() -> void:
 	image.fill_rect(Rect2i(tile_size * 2, 0, tile_size, tile_size), Color(0.2, 0.7, 0.3))
 
 	var texture := ImageTexture.create_from_image(image)
-	var tileset := TileSet.new()
-	tileset.tile_size = Vector2i(tile_size, tile_size)
+	var new_tileset := TileSet.new()
+	new_tileset.tile_size = Vector2i(tile_size, tile_size)
 
 	var atlas_source := TileSetAtlasSource.new()
 	atlas_source.texture = texture
@@ -62,3 +70,22 @@ func _setup_tileset() -> void:
 
 	tileset.add_source(atlas_source, 0)
 	tile_map.tile_set = tileset
+
+func get_random_walkable_position(max_attempts := 60) -> Vector2:
+	for _i in max_attempts:
+		var coord := Vector2i(randi_range(0, map_width - 1), randi_range(0, map_height - 1))
+		if is_walkable(coord):
+			var local := tile_map.map_to_local(coord)
+			local += Vector2(tile_size / 2.0, tile_size / 2.0)
+			return tile_map.to_global(local)
+	return Vector2.ZERO
+
+func _update_game_state_biome() -> void:
+	var center := Vector2i(map_width / 2, map_height / 2)
+	var atlas_coords := tile_map.get_cell_atlas_coords(0, center)
+	var biome := "grassland"
+	if atlas_coords.x == TILE_WATER or atlas_coords.x == TILE_SAND:
+		biome = "coastal"
+	var game_state := get_tree().get_first_node_in_group("game_state")
+	if game_state:
+		game_state.current_biome = biome
