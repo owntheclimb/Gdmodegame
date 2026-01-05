@@ -102,10 +102,11 @@ func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> vo
 		if event.pressed:
 			state = State.DRAGGED
 		else:
-			_handle_drop()
-			state = State.IDLE
+			var drop_handled := _handle_drop()
+			if not drop_handled:
+				state = State.IDLE
 
-func _handle_drop() -> void:
+func _handle_drop() -> bool:
 	var overlapping_areas := drop_detector.get_overlapping_areas()
 	var overlapping_bodies := drop_detector.get_overlapping_bodies()
 
@@ -114,7 +115,7 @@ func _handle_drop() -> void:
 			current_task = "Clearing Rubble"
 			state = State.WORKING
 			target_position = area.global_position
-			return
+			return true
 
 	for body in overlapping_bodies:
 		if body == self:
@@ -122,7 +123,9 @@ func _handle_drop() -> void:
 		if body.is_in_group("villager"):
 			if _can_romance_with(body):
 				start_romance(body)
-				return
+				return true
+
+	return false
 
 func _can_romance_with(other: Node) -> bool:
 	if not other:
