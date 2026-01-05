@@ -1,0 +1,29 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/World.tscn" id="1_xv4j4"]
+[ext_resource type="PackedScene" path="res://scenes/Villager.tscn" id="2_1hh3x"]
+[ext_resource type="PackedScene" path="res://scenes/BerryBush.tscn" id="3_6d4l6"]
+[ext_resource type="PackedScene" path="res://scenes/Rock.tscn" id="4_3k2n2"]
+[ext_resource type="PackedScene" path="res://scenes/TaskBoard.tscn" id="5_gv4ad"]
+[ext_resource type="PackedScene" path="res://scenes/Storage.tscn" id="6_u12g3"]
+
+[node name="Game" type="Node2D"]
+
+[node name="World" parent="." instance=ExtResource("1_xv4j4")]
+
+[node name="TaskBoard" parent="." instance=ExtResource("5_gv4ad")]
+
+[node name="Storage" parent="." instance=ExtResource("6_u12g3")]
+
+[node name="Villager" parent="." instance=ExtResource("2_1hh3x")]
+position = Vector2(200, 200)
+
+[node name="Villager2" parent="." instance=ExtResource("2_1hh3x")]
+position = Vector2(260, 200)
+gender = "Male"
+
+[node name="BerryBush" parent="." instance=ExtResource("3_6d4l6")]
+position = Vector2(300, 240)
+
+[node name="Rock" parent="." instance=ExtResource("4_3k2n2")]
+position = Vector2(340, 220)
