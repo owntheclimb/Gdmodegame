@@ -27,84 +27,28 @@ func _update_loaded_chunks() -> void:
 	var center_chunk := _world_to_chunk(focus_position)
 	var desired_chunks: Dictionary = {}
 
-	for x in range(center_chunk.x - render_distance, center_chunk.x + render_distance + 1):
-		for y in range(center_chunk.y - render_distance, center_chunk.y + render_distance + 1):
-			var coord := Vector2i(x, y)
-			desired_chunks[coord] = true
-			if not loaded_chunks.has(coord):
-				_load_chunk(coord)
+func get_tile_type(tile_coord: Vector2i) -> int:
+	var atlas_coords := tile_map.get_cell_atlas_coords(0, tile_coord)
+	return atlas_coords.x
 
-	for coord in loaded_chunks.keys():
-		if not desired_chunks.has(coord):
-			_unload_chunk(coord)
+func get_tile_type_world(world_position: Vector2) -> int:
+	var tile_coord := tile_map.local_to_map(tile_map.to_local(world_position))
+	return get_tile_type(tile_coord)
 
-func _load_chunk(chunk_coord: Vector2i) -> void:
-	var chunk := WorldChunk.new()
-	chunk.name = "Chunk_%s_%s" % [chunk_coord.x, chunk_coord.y]
-	chunk.position = Vector2(chunk_coord.x * chunk_size * tile_size, chunk_coord.y * chunk_size * tile_size)
-	add_child(chunk)
-	chunk.setup(chunk_coord, chunk_size, tileset, noise)
-	loaded_chunks[chunk_coord] = chunk
+func is_water_world(world_position: Vector2) -> bool:
+	return get_tile_type_world(world_position) == TILE_WATER
 
-func _unload_chunk(chunk_coord: Vector2i) -> void:
-	var chunk: TileMap = loaded_chunks.get(chunk_coord)
-	if chunk:
-		chunk.queue_free()
-	loaded_chunks.erase(chunk_coord)
-
-func _get_focus_position() -> Vector2:
-	var camera := get_viewport().get_camera_2d()
-	if camera:
-		return camera.global_position
-	var villager := get_tree().get_first_node_in_group("villager")
-	if villager:
-		return villager.global_position
-	return global_position
-
-func _world_to_chunk(world_position: Vector2) -> Vector2i:
-	var tile_coord := Vector2i(
-		floor(world_position.x / tile_size),
-		floor(world_position.y / tile_size)
-	)
-	return _tile_to_chunk(tile_coord)
-
-func _tile_to_chunk(tile_coord: Vector2i) -> Vector2i:
-	return Vector2i(
-		floor(float(tile_coord.x) / chunk_size),
-		floor(float(tile_coord.y) / chunk_size)
-	)
-
-func _tile_to_local(tile_coord: Vector2i) -> Vector2i:
-	return Vector2i(
-		posmod(tile_coord.x, chunk_size),
-		posmod(tile_coord.y, chunk_size)
-	)
-
-func is_walkable_world(world_position: Vector2) -> bool:
-	var tile_coord := Vector2i(
-		floor(world_position.x / tile_size),
-		floor(world_position.y / tile_size)
-	)
-	var chunk_coord := _tile_to_chunk(tile_coord)
-	var local_coord := _tile_to_local(tile_coord)
-	var chunk := loaded_chunks.get(chunk_coord)
-	if not chunk:
-		_load_chunk(chunk_coord)
-		chunk = loaded_chunks.get(chunk_coord)
-	if not chunk:
+func is_walkable(tile_coord: Vector2i, allow_water := true) -> bool:
+	var tile_type := get_tile_type(tile_coord)
+	if tile_type == -1:
 		return false
-	return chunk.is_walkable(local_coord)
+	if tile_type == TILE_WATER and not allow_water:
+		return false
+	return true
 
-func spawn_construction_site(site_scene: PackedScene, position: Vector2, blueprint: Blueprint) -> ConstructionSite:
-	if not site_scene:
-		return null
-	var site := site_scene.instantiate()
-	if site is Node2D:
-		site.global_position = position
-	add_child(site)
-	if site.has_method("assign_blueprint"):
-		site.assign_blueprint(blueprint)
-	return site
+func is_walkable_world(world_position: Vector2, allow_water := true) -> bool:
+	var tile_coord := tile_map.local_to_map(tile_map.to_local(world_position))
+	return is_walkable(tile_coord, allow_water)
 
 func _setup_tileset() -> void:
 	var image := Image.create(tile_size * 3, tile_size, false, Image.FORMAT_RGBA8)
