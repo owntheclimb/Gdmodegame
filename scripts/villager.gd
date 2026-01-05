@@ -105,6 +105,7 @@ func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> vo
 			var drop_handled := _handle_drop()
 			if not drop_handled:
 				state = State.IDLE
+				_record_action("scouted_area")
 
 func _handle_drop() -> bool:
 	var overlapping_areas := drop_detector.get_overlapping_areas()
@@ -115,6 +116,7 @@ func _handle_drop() -> bool:
 			current_task = "Clearing Rubble"
 			state = State.WORKING
 			target_position = area.global_position
+			_record_action("cleared_rubble")
 			return true
 
 	for body in overlapping_bodies:
@@ -152,6 +154,11 @@ func receive_romance(partner_position: Vector2) -> void:
 
 func _get_world() -> Node:
 	return get_tree().get_first_node_in_group("world")
+
+func _record_action(action: String) -> void:
+	var game_state := get_tree().get_first_node_in_group("game_state")
+	if game_state:
+		game_state.record_action(action)
 
 func _setup_placeholder_sprite() -> void:
 	if sprite.texture:

@@ -1,11 +1,19 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/World.tscn" id="1_xv4j4"]
 [ext_resource type="PackedScene" path="res://scenes/Villager.tscn" id="2_1hh3x"]
 [ext_resource type="PackedScene" path="res://scenes/BerryBush.tscn" id="3_6d4l6"]
 [ext_resource type="PackedScene" path="res://scenes/Rock.tscn" id="4_3k2n2"]
+[ext_resource type="PackedScene" path="res://scenes/TaskBoard.tscn" id="5_1hvwf"]
+[ext_resource type="PackedScene" path="res://scenes/EventLocation.tscn" id="6_eh1t0"]
+[ext_resource type="Script" path="res://scripts/event_manager.gd" id="7_31p6n"]
+[ext_resource type="Script" path="res://scripts/game_state.gd" id="8_3dr42"]
+[ext_resource type="Script" path="res://scripts/event_notifications.gd" id="9_bkpux"]
 
 [node name="Game" type="Node2D"]
+
+[node name="GameState" type="Node" parent="."]
+script = ExtResource("8_3dr42")
 
 [node name="World" parent="." instance=ExtResource("1_xv4j4")]
 
@@ -21,3 +29,30 @@ position = Vector2(300, 240)
 
 [node name="Rock" parent="." instance=ExtResource("4_3k2n2")]
 position = Vector2(340, 220)
+
+[node name="TaskBoard" parent="." instance=ExtResource("5_1hvwf")]
+
+[node name="EventManager" type="Node" parent="."]
+script = ExtResource("7_31p6n")
+event_location_scene = ExtResource("6_eh1t0")
+
+[node name="EventNotifications" type="CanvasLayer" parent="."]
+script = ExtResource("9_bkpux")
+
+[node name="Panel" type="Panel" parent="EventNotifications"]
+anchors_preset = 0
+anchor_right = 0.35
+anchor_bottom = 0.25
+offset_right = 0.0
+offset_bottom = 0.0
+
+[node name="MarginContainer" type="MarginContainer" parent="EventNotifications/Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = -6.0
+offset_bottom = -6.0
+
+[node name="MessageList" type="VBoxContainer" parent="EventNotifications/Panel/MarginContainer"]
