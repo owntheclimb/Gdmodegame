@@ -11,6 +11,7 @@ enum State { IDLE, WANDER, WORKING, DRAGGED, ROMANCE, EAT }
 var state: State = State.IDLE
 var target_position: Vector2
 var current_task := ""
+var active_task: Task
 
 var _idle_timer := 0.0
 var _idle_interval := 2.0
@@ -56,6 +57,9 @@ func _handle_idle(delta: float) -> void:
 			target_position = bush.global_position
 			return
 
+	if _try_claim_task():
+		return
+
 	var world := _get_world()
 	if not world:
 		return
@@ -84,6 +88,8 @@ func _finish_task_on_arrival() -> void:
 				hunger = min(hunger + bush.consume(), 100.0)
 		State.ROMANCE:
 			current_task = ""
+		State.WORKING:
+			_complete_active_task()
 	state = State.IDLE
 
 func _find_nearest_berry_bush() -> Node2D:
@@ -152,6 +158,47 @@ func receive_romance(partner_position: Vector2) -> void:
 
 func _get_world() -> Node:
 	return get_tree().get_first_node_in_group("world")
+
+func _get_task_board() -> TaskBoard:
+	return get_tree().get_first_node_in_group("task_board")
+
+func _try_claim_task() -> bool:
+	var task_board := _get_task_board()
+	if not task_board:
+		return false
+	var task := task_board.request_task(self)
+	if not task:
+		return false
+	active_task = task
+	current_task = task.task_type
+	var target := get_node_or_null(task.target_node_path)
+	if target and target is Node2D:
+		state = State.WORKING
+		target_position = target.global_position
+		return true
+	active_task = null
+	return false
+
+func _complete_active_task() -> void:
+	if not active_task:
+		return
+	var task_board := _get_task_board()
+	var target := get_node_or_null(active_task.target_node_path)
+	if target:
+		match active_task.task_type:
+			"deliver_resource":
+				if target.has_method("receive_delivery"):
+					var resource := active_task.payload.get("resource", "")
+					var amount := int(active_task.payload.get("amount", 0))
+					target.receive_delivery(resource, amount)
+			"build":
+				if target.has_method("perform_build_step"):
+					var work := float(active_task.payload.get("work", 1.0))
+					target.perform_build_step(work)
+	if task_board:
+		task_board.complete_task(active_task)
+	active_task = null
+	current_task = ""
 
 func _setup_placeholder_sprite() -> void:
 	if sprite.texture:

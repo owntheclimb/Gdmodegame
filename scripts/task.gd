@@ -7,6 +7,7 @@ enum TaskStatus { OPEN, CLAIMED, COMPLETE }
 @export var task_type := ""
 @export var priority := 0
 @export var target_node_path: NodePath
+@export var payload: Dictionary = {}
 @export var status := TaskStatus.OPEN
 @export var assigned_villager_path: NodePath
 

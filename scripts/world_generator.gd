@@ -42,6 +42,17 @@ func is_walkable_world(world_position: Vector2) -> bool:
 	var tile_coord := tile_map.local_to_map(tile_map.to_local(world_position))
 	return is_walkable(tile_coord)
 
+func spawn_construction_site(site_scene: PackedScene, position: Vector2, blueprint: Blueprint) -> ConstructionSite:
+	if not site_scene:
+		return null
+	var site := site_scene.instantiate()
+	if site is Node2D:
+		site.global_position = position
+	add_child(site)
+	if site.has_method("assign_blueprint"):
+		site.assign_blueprint(blueprint)
+	return site
+
 func _setup_tileset() -> void:
 	var image := Image.create(tile_size * 3, tile_size, false, Image.FORMAT_RGBA8)
 	image.fill(Color(0, 0, 0, 0))
