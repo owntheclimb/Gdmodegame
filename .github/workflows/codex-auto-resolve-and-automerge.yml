@@ -1,0 +1,74 @@
+name: Codex Auto-Resolve + Auto-Approve + Auto-Merge
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review, labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  codex_lane:
+    if: |
+      github.event.pull_request.draft == false &&
+      contains(github.event.pull_request.labels.*.name, 'codex') &&
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge main into PR, prefer PR on conflicts
+        run: |
+          git fetch origin main
+          # This prefers the PR branch for conflicting hunks, while still taking non-conflicting updates from main.
+          git merge origin/main -X ours -m "Codex auto-resolve, prefer PR on conflicts" || (git merge --abort && exit 1)
+
+      - name: Push the conflict resolution commit (if any)
+        run: |
+          # If merge created a new commit, push it. If already up to date, this will be a no-op.
+          git push
+
+      - name: Auto-approve the PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+
+            await github.rest.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              event: "APPROVE",
+              body: "Auto-approved for Codex First Lane ✅"
+            });
+
+      - name: Enable auto-merge (squash)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prId = context.payload.pull_request.node_id;
+
+            const mutation = `
+              mutation($prId: ID!) {
+                enablePullRequestAutoMerge(input: {
+                  pullRequestId: $prId,
+                  mergeMethod: SQUASH
+                }) {
+                  pullRequest { number }
+                }
+              }
+            `;
+
+            await github.graphql(mutation, { prId });

@@ -1,16 +1,13 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/World.tscn" id="1_xv4j4"]
 [ext_resource type="PackedScene" path="res://scenes/Villager.tscn" id="2_1hh3x"]
 [ext_resource type="PackedScene" path="res://scenes/BerryBush.tscn" id="3_6d4l6"]
 [ext_resource type="PackedScene" path="res://scenes/Rock.tscn" id="4_3k2n2"]
-[ext_resource type="PackedScene" path="res://scenes/TaskBoard.tscn" id="5_gv4ad"]
 
 [node name="Game" type="Node2D"]
 
 [node name="World" parent="." instance=ExtResource("1_xv4j4")]
-
-[node name="TaskBoard" parent="." instance=ExtResource("5_gv4ad")]
 
 [node name="Villager" parent="." instance=ExtResource("2_1hh3x")]
 position = Vector2(200, 200)
