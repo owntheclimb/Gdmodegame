@@ -22,7 +22,7 @@ func _select_at_position(position: Vector2) -> void:
 	var candidate: Node2D = null
 	for result in results:
 		var collider := result.collider
-		if collider and (collider.is_in_group("villager") or collider.is_in_group("construction_site")):
+		if collider and collider.is_in_group("villager"):
 			candidate = collider
 			break
 	_set_selected(candidate)

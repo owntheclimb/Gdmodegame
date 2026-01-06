@@ -19,11 +19,6 @@ func _place_construction_site(position: Vector2) -> void:
 	blueprint.required_resources = {"wood": 5.0, "stone": 2.0}
 	blueprint.build_time = 8.0
 	blueprint.building_scene = default_building_scene
-	var tech_manager := get_tree().get_first_node_in_group("tech_manager")
-	if tech_manager and "Stoneworking" in tech_manager.tech_tree.unlocked:
-		blueprint.build_time = 6.0
-	if tech_manager and "Farming" in tech_manager.tech_tree.unlocked:
-		blueprint.required_resources["wood"] = 4.0
 	if site.has_method("configure"):
 		site.configure(blueprint)
 	var world := get_tree().get_first_node_in_group("world")

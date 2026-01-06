@@ -1,0 +1,49 @@
+name: Codex Priority Gate
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled, unlabeled, ready_for_review]
+
+permissions:
+  checks: write
+  pull-requests: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enforce Codex-first rule
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const isCodex = pr.labels.some(l => l.name === "codex");
+
+            // List open PRs with the "codex" label
+            const codexPRs = await github.paginate(github.rest.pulls.list, {
+              owner, repo, state: "open", per_page: 100
+            }).then(all => all.filter(p => p.labels.some(l => l.name === "codex")));
+
+            // If this PR is not codex, and any codex PR exists, block it
+            const shouldBlock = !isCodex && codexPRs.length > 0;
+
+            const conclusion = shouldBlock ? "failure" : "success";
+            const summary = shouldBlock
+              ? `Blocked. There is at least one open PR labeled "codex" (#${codexPRs.map(p => p.number).join(", #")}).`
+              : "Allowed. No open codex PRs are blocking this PR.";
+
+            await github.rest.checks.create({
+              owner,
+              repo,
+              name: "codex-priority",
+              head_sha: pr.head.sha,
+              status: "completed",
+              conclusion,
+              output: {
+                title: "Codex Priority Gate",
+                summary
+              }
+            });
