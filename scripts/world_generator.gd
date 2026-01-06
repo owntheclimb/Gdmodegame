@@ -14,17 +14,13 @@ const TILE_GRASS := 2
 var noise := FastNoiseLite.new()
 var tileset: TileSet
 var loaded_chunks: Dictionary = {}
-var world_seed := 0
 @onready var tile_map: TileMap = $TileMap
 
 func _ready() -> void:
 	add_to_group("world")
 	tileset = _setup_tileset()
 	tile_map.tile_set = tileset
-	if world_seed == 0:
-		randomize()
-		world_seed = randi()
-	noise.seed = world_seed
+	noise.seed = randi()
 	noise.frequency = 0.04
 	_generate_map()
 	_update_game_state_biome()
@@ -80,40 +76,6 @@ func _setup_tileset() -> TileSet:
 
 	new_tileset.add_source(atlas_source, 0)
 	return new_tileset
-
-func _generate_map() -> void:
-	tile_map.clear()
-	for x in range(map_width):
-		for y in range(map_height):
-			var value := noise.get_noise_2d(x, y)
-			var tile_id := _tile_from_noise(value)
-			tile_map.set_cell(0, Vector2i(x, y), 0, Vector2i(tile_id, 0))
-
-func _tile_from_noise(value: float) -> int:
-	if value < 0.2:
-		return TILE_WATER
-	if value < 0.4:
-		return TILE_SAND
-	return TILE_GRASS
-
-func _get_focus_position() -> Vector2:
-	var camera := get_viewport().get_camera_2d()
-	if camera:
-		return camera.global_position
-	return global_position
-
-func _world_to_chunk(world_position: Vector2) -> Vector2i:
-	var chunk_world_size := float(chunk_size * tile_size)
-	return Vector2i(floor(world_position.x / chunk_world_size), floor(world_position.y / chunk_world_size))
-
-func get_seed() -> int:
-	return world_seed
-
-func set_seed(seed: int) -> void:
-	world_seed = seed
-	noise.seed = world_seed
-	_generate_map()
-	_update_game_state_biome()
 
 func get_random_walkable_position(max_attempts := 60) -> Vector2:
 	for _i in range(max_attempts):
