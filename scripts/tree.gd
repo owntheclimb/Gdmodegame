@@ -5,7 +5,6 @@ extends ResourceNode
 @onready var sprite: Sprite2D = $Sprite
 
 func _ready() -> void:
-	super._ready()
 	add_to_group("tree")
 	resource_type = "wood"
 	amount = wood_amount

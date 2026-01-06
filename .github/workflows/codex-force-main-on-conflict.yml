@@ -1,0 +1,69 @@
+name: Codex Force Main On Conflict (Main Wins)
+
+on:
+  pull_request_target:
+    types: [labeled, unlabeled, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  force_main_wins:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (
+        contains(github.event.pull_request.labels.*.name, 'codex') &&
+        github.event.pull_request.base.ref == 'main' &&
+        github.event.pull_request.head.repo.full_name == github.repository
+      )
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge main into PR, prefer main on conflicts, then force-resolve leftovers
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git fetch origin main
+
+          # Attempt merge, prefer main for conflict hunks
+          git merge origin/main -X theirs --no-commit --no-ff || true
+
+          # If anything still unmerged, force main’s version
+          if git ls-files -u | grep -q .; then
+            echo "Unmerged paths detected, forcing main (theirs)."
+            while IFS= read -r file; do
+              if git cat-file -e "origin/main:$file" 2>/dev/null; then
+                git checkout --theirs -- "$file"
+                git add "$file"
+              else
+                git rm -f "$file" || true
+              fi
+            done < <(git diff --name-only --diff-filter=U)
+          fi
+
+          # If nothing changed, exit cleanly
+          if git diff --cached --quiet; then
+            echo "No merge changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Auto-resolve conflicts, main wins"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+      - name: Push merge commit back to PR branch
+        run: git push
