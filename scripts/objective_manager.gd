@@ -36,9 +36,3 @@ func get_objective_text() -> String:
 		var status := "[x]" if objective["completed"] else "[ ]"
 		lines.append("%s %s" % [status, objective["description"]])
 	return "\n".join(lines)
-
-func all_completed() -> bool:
-	for objective in objectives:
-		if not objective["completed"]:
-			return false
-	return true
