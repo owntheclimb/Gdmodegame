@@ -1,9 +1,8 @@
 extends Resource
 class_name Trait
 
-@export var name := ""
-@export var description := ""
+@export var id: StringName
+@export var display_name := ""
+@export var hydrophobic := false
 @export var speed_multiplier := 1.0
-@export var hunger_multiplier := 1.0
-@export var prefers_events := false
-@export var avoids_beach := false
+@export var hunger_rate_multiplier := 1.0

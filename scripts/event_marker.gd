@@ -1,7 +1,6 @@
 extends Area2D
 
 @onready var sprite: Sprite2D = $Sprite
-@onready var label: Label = $Label
 
 func _ready() -> void:
 	add_to_group("event_marker")
@@ -16,9 +15,6 @@ func _setup_placeholder_sprite() -> void:
 	var texture := ImageTexture.create_from_image(image)
 	sprite.texture = texture
 
-func set_event_type(event_type: String) -> void:
-	label.text = event_type
-
 func _register_task() -> void:
 	var task_board: TaskBoard = get_tree().get_first_node_in_group("task_board")
 	if not task_board:
@@ -28,5 +24,4 @@ func _register_task() -> void:
 	task.task_type = "investigate_event"
 	task.priority = 5
 	task.target_node_path = get_path()
-	task.metadata = {"reward_food": 10.0}
 	task_board.add_task(task)

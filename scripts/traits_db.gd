@@ -35,15 +35,3 @@ func _seed_traits() -> void:
 	hearty.description = "Gets hungry more slowly."
 	hearty.hunger_multiplier = 0.8
 	traits.append(hearty)
-
-	var explorer := Trait.new()
-	explorer.name = "Explorer"
-	explorer.description = "Seeks out mysteries and events."
-	explorer.prefers_events = true
-	traits.append(explorer)
-
-	var hydrophobic := Trait.new()
-	hydrophobic.name = "Hydrophobic"
-	hydrophobic.description = "Avoids sandy beaches."
-	hydrophobic.avoids_beach = true
-	traits.append(hydrophobic)

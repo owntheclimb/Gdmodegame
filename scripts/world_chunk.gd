@@ -1,46 +1,37 @@
-extends Node2D
-class_name WorldChunk
+extends TileMap
 
-var chunk_coord := Vector2i.ZERO
+const TILE_WATER := 0
+const TILE_SAND := 1
+const TILE_GRASS := 2
+
+var chunk_coord: Vector2i
 var chunk_size := 32
-var tile_size := 16
 var noise: FastNoiseLite
-var tile_set: TileSet
 
-@onready var tile_map: TileMap = TileMap.new()
-
-func _ready() -> void:
-	add_child(tile_map)
-	_generate_tiles()
-
-func setup(coord: Vector2i, noise_source: FastNoiseLite, tileset: TileSet, size: int, tile_px: int) -> void:
+func setup(coord: Vector2i, size: int, tileset: TileSet, noise_source: FastNoiseLite) -> void:
 	chunk_coord = coord
+	chunk_size = size
 	noise = noise_source
 	tile_set = tileset
-	chunk_size = size
-	tile_size = tile_px
+	_generate()
 
-func _generate_tiles() -> void:
-	if not noise or not tile_set:
-		return
-	tile_map.tile_set = tile_set
+func _generate() -> void:
+	var start := chunk_coord * chunk_size
 	for x in chunk_size:
 		for y in chunk_size:
-			var world_x := chunk_coord.x * chunk_size + x
-			var world_y := chunk_coord.y * chunk_size + y
+			var world_x := start.x + x
+			var world_y := start.y + y
 			var value := noise.get_noise_2d(world_x, world_y)
 			var tile_id := _tile_from_noise(value)
-			tile_map.set_cell(0, Vector2i(x, y), 0, Vector2i(tile_id, 0))
+			set_cell(0, Vector2i(x, y), 0, Vector2i(tile_id, 0))
 
 func _tile_from_noise(value: float) -> int:
 	if value < 0.2:
-		return 0
+		return TILE_WATER
 	if value < 0.4:
-		return 1
-	return 2
+		return TILE_SAND
+	return TILE_GRASS
 
-func is_walkable_world(world_position: Vector2) -> bool:
-	var local_pos := to_local(world_position)
-	var tile_coord := tile_map.local_to_map(local_pos)
-	var atlas_coords := tile_map.get_cell_atlas_coords(0, tile_coord)
-	return atlas_coords.x != 0
+func is_walkable(local_tile_coord: Vector2i) -> bool:
+	var atlas_coords := get_cell_atlas_coords(0, local_tile_coord)
+	return atlas_coords.x != TILE_WATER
