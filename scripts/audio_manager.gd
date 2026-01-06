@@ -31,7 +31,7 @@ func _beep(freq: float) -> void:
 		return
 	var length := 0.1
 	var frames := int(generator.mix_rate * length)
-	for i in frames:
+	for i in range(frames):
 		var t := float(i) / generator.mix_rate
 		var sample := sin(PI * 2.0 * freq * t) * 0.2
 		playback.push_frame(Vector2(sample, sample))

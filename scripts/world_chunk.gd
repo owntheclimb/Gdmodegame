@@ -17,8 +17,8 @@ func setup(coord: Vector2i, size: int, tileset: TileSet, noise_source: FastNoise
 
 func _generate() -> void:
 	var start := chunk_coord * chunk_size
-	for x in chunk_size:
-		for y in chunk_size:
+	for x in range(chunk_size):
+		for y in range(chunk_size):
 			var world_x := start.x + x
 			var world_y := start.y + y
 			var value := noise.get_noise_2d(world_x, world_y)

@@ -3,8 +3,13 @@ extends Node2D
 @export var tile_size := 16
 @export var chunk_size := 32
 @export var render_distance := 2
+@export var map_width := 128
+@export var map_height := 128
 
 const WorldChunk := preload("res://scripts/world_chunk.gd")
+const TILE_WATER := 0
+const TILE_SAND := 1
+const TILE_GRASS := 2
 
 var noise := FastNoiseLite.new()
 var tileset: TileSet
@@ -13,7 +18,6 @@ var loaded_chunks: Dictionary = {}
 
 func _ready() -> void:
 	add_to_group("world")
-	randomize()
 	tileset = _setup_tileset()
 	tile_map.tile_set = tileset
 	noise.seed = randi()
@@ -25,8 +29,8 @@ func _process(_delta: float) -> void:
 	_update_loaded_chunks()
 
 func _update_loaded_chunks() -> void:
-	var focus_position := _get_focus_position()
-	var center_chunk := _world_to_chunk(focus_position)
+	var focus_position: Vector2 = _get_focus_position()
+	var center_chunk: Vector2i = _world_to_chunk(focus_position)
 	var desired_chunks: Dictionary = {}
 
 func get_tile_type(tile_coord: Vector2i) -> int:
