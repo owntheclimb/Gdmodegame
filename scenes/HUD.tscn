@@ -23,9 +23,3 @@ text = "Storage Food: --"
 
 [node name="Time" type="Label" parent="MarginContainer/VBoxContainer"]
 text = "Time: --"
-
-[node name="Status" type="Label" parent="MarginContainer/VBoxContainer"]
-text = "Day: --  Population: --"
-
-[node name="Hint" type="Label" parent="MarginContainer/VBoxContainer"]
-text = "Right-click: Place building  |  Ctrl+S: Save  Ctrl+L: Load"

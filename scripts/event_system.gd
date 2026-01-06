@@ -24,6 +24,4 @@ func _spawn_event() -> void:
 	var position := world.get_random_walkable_position()
 	var marker := marker_scene.instantiate()
 	marker.global_position = position
-	if marker.has_method("set_event_type"):
-		marker.set_event_type(world.get_biome_at(position))
 	add_child(marker)
