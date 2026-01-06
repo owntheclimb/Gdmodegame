@@ -15,9 +15,6 @@ func _ready() -> void:
 	get_tree().node_added.connect(_on_node_added)
 	_register_existing_world_tasks()
 
-func _ready() -> void:
-	add_to_group("task_board")
-
 func add_task(task: Task) -> void:
 	_tasks.append(task)
 	task_added.emit(task)

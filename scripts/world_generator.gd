@@ -9,11 +9,13 @@ const WorldChunk := preload("res://scripts/world_chunk.gd")
 var noise := FastNoiseLite.new()
 var tileset: TileSet
 var loaded_chunks: Dictionary = {}
+@onready var tile_map: TileMap = $TileMap
 
 func _ready() -> void:
 	add_to_group("world")
 	randomize()
 	tileset = _setup_tileset()
+	tile_map.tile_set = tileset
 	noise.seed = randi()
 	noise.frequency = 0.04
 	_generate_map()
@@ -50,7 +52,7 @@ func is_walkable_world(world_position: Vector2, allow_water := true) -> bool:
 	var tile_coord := tile_map.local_to_map(tile_map.to_local(world_position))
 	return is_walkable(tile_coord, allow_water)
 
-func _setup_tileset() -> void:
+func _setup_tileset() -> TileSet:
 	var image := Image.create(tile_size * 3, tile_size, false, Image.FORMAT_RGBA8)
 	image.fill(Color(0, 0, 0, 0))
 	image.fill_rect(Rect2i(0, 0, tile_size, tile_size), Color(0.1, 0.35, 0.8))
@@ -68,11 +70,11 @@ func _setup_tileset() -> void:
 	atlas_source.create_tile(Vector2i(1, 0))
 	atlas_source.create_tile(Vector2i(2, 0))
 
-	tileset.add_source(atlas_source, 0)
-	tile_map.tile_set = tileset
+	new_tileset.add_source(atlas_source, 0)
+	return new_tileset
 
 func get_random_walkable_position(max_attempts := 60) -> Vector2:
-	for _i in max_attempts:
+	for _i in range(max_attempts):
 		var coord := Vector2i(randi_range(0, map_width - 1), randi_range(0, map_height - 1))
 		if is_walkable(coord):
 			var local := tile_map.map_to_local(coord)
