@@ -28,7 +28,7 @@ func consume(resource_type: String, amount: float) -> float:
 	if amount <= 0.0:
 		return 0.0
 	var available := get_amount(resource_type)
-	var consumed := min(amount, available)
+	var consumed := minf(amount, available)
 	if consumed <= 0.0:
 		return 0.0
 	match resource_type:
