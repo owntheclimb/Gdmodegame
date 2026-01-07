@@ -32,6 +32,9 @@ func assign_blueprint(new_blueprint: Blueprint) -> void:
 	_setup_from_blueprint()
 	_create_resource_tasks()
 
+func is_build_task_created() -> bool:
+	return _build_task_created
+
 func receive_delivery(resource: String, amount: int) -> void:
 	if not remaining_costs.has(resource):
 		return

@@ -55,27 +55,48 @@ func save_game() -> void:
 
 	for site in get_tree().get_nodes_in_group("construction_site"):
 		var blueprint_path := ""
+		var blueprint_data := {}
 		if site is ConstructionSite:
 			var site_blueprint := site.blueprint
-			if site_blueprint and site_blueprint.resource_path != "":
-				blueprint_path = site_blueprint.resource_path
+			if site_blueprint:
+				if site_blueprint.resource_path != "":
+					blueprint_path = site_blueprint.resource_path
+				else:
+					blueprint_data = {
+						"name": site_blueprint.name,
+						"build_time": site_blueprint.build_time,
+						"costs": site_blueprint.costs,
+						"building_scene_path": site_blueprint.building_scene.resource_path if site_blueprint.building_scene else ""
+					}
+			var build_task_created := site.is_build_task_created() if site.has_method("is_build_task_created") else false
 			data["construction_sites"].append({
 				"position": [site.global_position.x, site.global_position.y],
 				"blueprint_path": blueprint_path,
+				"blueprint_data": blueprint_data,
 				"remaining_costs": site.remaining_costs,
 				"remaining_build_time": site.remaining_build_time,
-				"build_task_created": site._build_task_created
+				"build_task_created": build_task_created
 			})
 
 	for building in get_tree().get_nodes_in_group("building"):
 		if building is Building:
 			var building_blueprint_path := ""
-			if building.blueprint and building.blueprint.resource_path != "":
-				building_blueprint_path = building.blueprint.resource_path
+			var building_blueprint_data := {}
+			if building.blueprint:
+				if building.blueprint.resource_path != "":
+					building_blueprint_path = building.blueprint.resource_path
+				else:
+					building_blueprint_data = {
+						"name": building.blueprint.name,
+						"build_time": building.blueprint.build_time,
+						"costs": building.blueprint.costs,
+						"building_scene_path": building.blueprint.building_scene.resource_path if building.blueprint.building_scene else ""
+					}
 			data["buildings"].append({
 				"position": [building.global_position.x, building.global_position.y],
 				"scene_path": building.scene_file_path,
-				"blueprint_path": building_blueprint_path
+				"blueprint_path": building_blueprint_path,
+				"blueprint_data": building_blueprint_data
 			})
 
 	for node in get_tree().get_nodes_in_group("resource"):
@@ -169,9 +190,8 @@ func _restore_construction_sites(saved_sites: Array) -> void:
 		if typeof(site_data) != TYPE_DICTIONARY:
 			continue
 		var blueprint_path := _as_string(site_data.get("blueprint_path", ""))
-		var blueprint := load(blueprint_path) if blueprint_path != "" else null
-		if blueprint and not (blueprint is Blueprint):
-			blueprint = null
+		var blueprint_data := _as_dictionary(site_data.get("blueprint_data", {}))
+		var blueprint := _load_blueprint(blueprint_path, blueprint_data)
 		var remaining_costs := _as_dictionary(site_data.get("remaining_costs", {}))
 		var remaining_time := _as_float(site_data.get("remaining_build_time", 0.0))
 		var build_task_created := bool(site_data.get("build_task_created", false))
@@ -198,10 +218,10 @@ func _restore_buildings(saved_buildings: Array) -> void:
 		if instance is Node2D:
 			instance.global_position = _as_vector2(building_data.get("position", null), Vector2.ZERO)
 		var blueprint_path := _as_string(building_data.get("blueprint_path", ""))
-		if blueprint_path != "":
-			var blueprint := load(blueprint_path)
-			if blueprint is Blueprint and instance.has_method("set_blueprint"):
-				instance.set_blueprint(blueprint)
+		var blueprint_data := _as_dictionary(building_data.get("blueprint_data", {}))
+		var blueprint := _load_blueprint(blueprint_path, blueprint_data)
+		if blueprint and instance.has_method("set_blueprint"):
+			instance.set_blueprint(blueprint)
 		var parent := get_tree().current_scene if get_tree().current_scene else get_tree().root
 		parent.add_child(instance)
 
@@ -259,3 +279,27 @@ func _as_vector2(value, fallback: Vector2) -> Vector2:
 	if not _is_number(value[0]) or not _is_number(value[1]):
 		return fallback
 	return Vector2(float(value[0]), float(value[1]))
+
+func _load_blueprint(blueprint_path: String, blueprint_data: Dictionary) -> Blueprint:
+	if blueprint_path != "":
+		var loaded := load(blueprint_path)
+		if loaded is Blueprint:
+			return loaded
+	var name_value := blueprint_data.get("name", "")
+	var build_time := blueprint_data.get("build_time", null)
+	var costs := blueprint_data.get("costs", null)
+	var building_scene_path := _as_string(blueprint_data.get("building_scene_path", ""))
+	if typeof(name_value) != TYPE_STRING and not _is_number(build_time) and typeof(costs) != TYPE_DICTIONARY:
+		return null
+	var blueprint := Blueprint.new()
+	if typeof(name_value) == TYPE_STRING:
+		blueprint.name = name_value
+	if _is_number(build_time):
+		blueprint.build_time = float(build_time)
+	if typeof(costs) == TYPE_DICTIONARY:
+		blueprint.costs = costs
+	if building_scene_path != "":
+		var scene := load(building_scene_path)
+		if scene is PackedScene:
+			blueprint.building_scene = scene
+	return blueprint
