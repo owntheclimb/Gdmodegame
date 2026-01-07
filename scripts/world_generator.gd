@@ -21,9 +21,6 @@ var moisture_noise := FastNoiseLite.new()
 var tileset: TileSet
 var loaded_chunks: Dictionary = {}
 @onready var tile_map: TileMap = $TileMap
-@onready var tree_scene: PackedScene = preload("res://scenes/Tree.tscn")
-@onready var rock_scene: PackedScene = preload("res://scenes/Rock.tscn")
-@onready var berry_scene: PackedScene = preload("res://scenes/BerryBush.tscn")
 var _world_seed := 0
 
 func _ready() -> void:
@@ -208,5 +205,4 @@ func set_seed(seed: int) -> void:
 	_apply_seed(seed)
 	if tile_map:
 		_generate_map()
-		_spawn_resources()
 		_update_game_state_biome()
