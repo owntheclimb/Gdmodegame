@@ -14,13 +14,13 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _place_construction_site(position: Vector2) -> void:
 	var site := construction_site_scene.instantiate()
-	var blueprint := BuildingBlueprint.new()
-	blueprint.building_name = "Hut"
-	blueprint.required_resources = {"wood": 5.0, "stone": 2.0}
+	var blueprint := Blueprint.new()
+	blueprint.name = "Hut"
+	blueprint.costs = {"wood": 5.0, "stone": 2.0}
 	blueprint.build_time = 8.0
 	blueprint.building_scene = default_building_scene
-	if site.has_method("configure"):
-		site.configure(blueprint)
+	if site.has_method("assign_blueprint"):
+		site.assign_blueprint(blueprint)
 	var world := get_tree().get_first_node_in_group("world")
 	if world and not world.is_walkable_world(position):
 		return
