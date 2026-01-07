@@ -18,6 +18,7 @@ var carried_resource_type := ""
 var carried_amount := 0.0
 var target_resource: ResourceNode
 var romance_partner: Node2D
+var assigned_task: Task
 
 var _idle_timer := 0.0
 var _idle_interval := 2.0
@@ -143,8 +144,10 @@ func _finish_task_on_arrival() -> void:
 		State.ROMANCE:
 			current_task = null
 		State.WORKING:
-			_handle_task_action()
-			complete_task()
+			if _handle_task_action():
+				complete_task()
+				state = State.IDLE
+			return
 	state = State.IDLE
 
 func _find_nearest_resource(resource_type: String) -> ResourceNode:
@@ -236,6 +239,121 @@ func _get_world() -> Node:
 
 func _get_storage() -> Storage:
 	return get_tree().get_first_node_in_group("storage") as Storage
+
+func request_task() -> void:
+	var task_board := _get_task_board()
+	if not task_board:
+		return
+	var task := task_board.request_task(self)
+	if task:
+		_assign_task(task)
+
+func _assign_task(task: Task) -> void:
+	assigned_task = task
+	current_task = task.task_type
+	state = State.WORKING
+	target_position = _get_task_target_position(task)
+
+func complete_task() -> void:
+	if not assigned_task:
+		return
+	var task_board := _get_task_board()
+	if task_board:
+		task_board.complete_task(assigned_task)
+	assigned_task = null
+	current_task = null
+
+func _handle_task_action() -> bool:
+	if not assigned_task:
+		return true
+	var target_node := _get_task_target_node(assigned_task)
+	if target_node and target_node.is_in_group("event_location"):
+		var location := target_node as EventLocation
+		var game_state := _get_game_state()
+		var storage := _get_storage()
+		location.resolve(game_state, storage)
+		return true
+
+	match assigned_task.task_type:
+		"clear_rock":
+			return _harvest_resource(target_node)
+		"gather_wood":
+			return _harvest_resource(target_node)
+		"harvest_berries":
+			return _harvest_resource(target_node)
+		"maintain_building":
+			_record_action("maintained_building")
+			return true
+		"deliver_resource":
+			return _deliver_resource(target_node)
+		"build":
+			return _perform_build_work(target_node)
+		_:
+			_record_action("completed_task")
+			return true
+
+func _harvest_resource(target_node: Node) -> bool:
+	if not (target_node is ResourceNode):
+		return true
+	var resource_node := target_node as ResourceNode
+	if resource_node.resource_amount <= 0.0:
+		return true
+	var amount := resource_node.harvest()
+	if amount <= 0.0:
+		return true
+	var storage := _get_storage()
+	if storage:
+		storage.deposit(resource_node.resource_type, amount)
+	return true
+
+func _deliver_resource(target_node: Node) -> bool:
+	if not target_node:
+		return true
+	if not target_node.has_method("receive_delivery"):
+		return true
+	var resource := ""
+	var amount := 0.0
+	if assigned_task.payload.has("resource"):
+		resource = str(assigned_task.payload.get("resource", ""))
+	if assigned_task.payload.has("amount"):
+		amount = float(assigned_task.payload.get("amount", 0.0))
+	var storage := _get_storage()
+	if not storage:
+		return true
+	if storage.get_amount(resource) < amount:
+		_record_action("delivery_failed")
+		return true
+	storage.consume(resource, amount)
+	target_node.receive_delivery(resource, int(amount))
+	_record_action("delivered_resource")
+	return true
+
+func _perform_build_work(target_node: Node) -> bool:
+	if not (target_node is ConstructionSite):
+		return true
+	var site := target_node as ConstructionSite
+	var work_amount := 0.1 * _get_speed_multiplier()
+	site.perform_build_step(work_amount)
+	if site.remaining_build_time > 0.0:
+		return false
+	return true
+
+func _get_task_target_position(task: Task) -> Vector2:
+	var target_node := _get_task_target_node(task)
+	if target_node:
+		return target_node.global_position
+	return task.target_world_position
+
+func _get_task_target_node(task: Task) -> Node2D:
+	if not task or task.target_node_path == NodePath():
+		return null
+	return get_tree().root.get_node_or_null(task.target_node_path) as Node2D
+
+func _get_task_board() -> TaskBoard:
+	return get_tree().get_first_node_in_group("task_board") as TaskBoard
+
+func _get_game_state() -> GameState:
+	return get_tree().get_first_node_in_group("game_state") as GameState
 
 func _setup_placeholder_sprite() -> void:
 	if sprite.texture:

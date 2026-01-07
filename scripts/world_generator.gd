@@ -5,6 +5,9 @@ extends Node2D
 @export var render_distance := 2
 @export var map_width := 128
 @export var map_height := 128
+@export var initial_trees := 45
+@export var initial_rocks := 28
+@export var initial_berry_bushes := 22
 
 const WorldChunk := preload("res://scripts/world_chunk.gd")
 const TILE_WATER := 0
@@ -27,6 +30,7 @@ func _ready() -> void:
 	_world_seed = randi()
 	_apply_seed(_world_seed)
 	_generate_map()
+	_spawn_resources()
 	_update_game_state_biome()
 
 func _process(_delta: float) -> void:
@@ -117,6 +121,39 @@ func get_random_walkable_position(max_attempts := 60) -> Vector2:
 			var local := tile_map.map_to_local(coord)
 			local += Vector2(tile_size / 2.0, tile_size / 2.0)
 			return tile_map.to_global(local)
+	return Vector2.ZERO
+
+func _spawn_resources() -> void:
+	for node in get_tree().get_nodes_in_group("resource"):
+		if node is Node:
+			node.queue_free()
+	_spawn_resource_set(tree_scene, initial_trees, [TILE_FOREST, TILE_GRASS])
+	_spawn_resource_set(rock_scene, initial_rocks, [TILE_MOUNTAIN, TILE_GRASS])
+	_spawn_resource_set(berry_scene, initial_berry_bushes, [TILE_GRASS, TILE_FOREST])
+
+func _spawn_resource_set(scene: PackedScene, count: int, preferred_tiles: Array[int]) -> void:
+	if not scene or count <= 0:
+		return
+	for _i in range(count):
+		var position := _get_random_walkable_position_for_tiles(preferred_tiles, 80)
+		if position == Vector2.ZERO:
+			continue
+		var instance := scene.instantiate()
+		if instance is Node2D:
+			instance.global_position = position
+		get_tree().current_scene.add_child(instance)
+
+func _get_random_walkable_position_for_tiles(preferred_tiles: Array[int], max_attempts := 80) -> Vector2:
+	for _i in range(max_attempts):
+		var coord := Vector2i(randi_range(0, map_width - 1), randi_range(0, map_height - 1))
+		if not is_walkable(coord):
+			continue
+		var tile_type := get_tile_type(coord)
+		if not preferred_tiles.is_empty() and not preferred_tiles.has(tile_type):
+			continue
+		var local := tile_map.map_to_local(coord)
+		local += Vector2(tile_size / 2.0, tile_size / 2.0)
+		return tile_map.to_global(local)
 	return Vector2.ZERO
 
 func _update_game_state_biome() -> void:

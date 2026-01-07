@@ -112,6 +112,9 @@ func _spawn_location(template: EventTemplate, world: Node) -> Node2D:
 	location.location_type = template.location_type
 	location.title = template.title
 	location.description = template.description
+	location.reward_resource = template.reward_resource
+	location.reward_amount = template.reward_amount
+	location.reward_action = template.reward_action
 	var position := world.get_random_walkable_position()
 	location.global_position = position
 	get_tree().current_scene.add_child(location)

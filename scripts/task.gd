@@ -23,3 +23,7 @@ func assign_to(villager: Node) -> void:
 
 func mark_complete() -> void:
 	status = TaskStatus.COMPLETE
+
+func release() -> void:
+	status = TaskStatus.OPEN
+	assigned_villager_path = NodePath()
