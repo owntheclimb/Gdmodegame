@@ -107,6 +107,8 @@ func _register_existing_world_tasks() -> void:
 		_try_register_world_task(tree)
 	for bush in get_tree().get_nodes_in_group("berry_bush"):
 		_try_register_world_task(bush)
+	for creature in get_tree().get_nodes_in_group("creature"):
+		_try_register_world_task(creature)
 	for building in get_tree().get_nodes_in_group("building"):
 		_try_register_world_task(building)
 
@@ -122,6 +124,8 @@ func _try_register_world_task(node: Node) -> void:
 		add_task_from_world_object(node, "gather_wood", 5)
 	elif node.is_in_group("berry_bush"):
 		add_task_from_world_object(node, "harvest_berries", 4)
+	elif node.is_in_group("creature"):
+		add_task_from_world_object(node, "hunt_creature", 6)
 	elif node.is_in_group("building"):
 		add_task_from_world_object(node, "maintain_building", 5)
 
