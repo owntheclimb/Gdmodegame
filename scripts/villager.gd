@@ -142,6 +142,11 @@ func _finish_task_on_arrival() -> void:
 			carried_resource_type = ""
 			carried_amount = 0.0
 		State.ROMANCE:
+			if romance_partner and romance_partner.is_inside_tree():
+				if romance_partner.state == State.ROMANCE and romance_partner.global_position.distance_to(global_position) < 10.0:
+					_attempt_reproduction(romance_partner)
+					_resolve_romance(romance_partner)
+					return
 			current_task = null
 		State.WORKING:
 			if _handle_task_action():
@@ -149,6 +154,13 @@ func _finish_task_on_arrival() -> void:
 				state = State.IDLE
 			return
 	state = State.IDLE
+
+func _resolve_romance(partner: Node2D) -> void:
+	current_task = null
+	state = State.IDLE
+	romance_partner = null
+	if partner and partner.has_method("_resolve_romance"):
+		partner._resolve_romance(null)
 
 func _find_nearest_resource(resource_type: String) -> ResourceNode:
 	var resources := get_tree().get_nodes_in_group("resource")
@@ -228,7 +240,7 @@ func start_romance(partner: Node2D) -> void:
 	if partner.has_method("receive_romance"):
 		partner.receive_romance(self)
 
-func receive_romance(partner_position: Vector2) -> void:
+func receive_romance(partner: Node2D) -> void:
 	current_task = null
 	state = State.ROMANCE
 	romance_partner = partner
