@@ -6,7 +6,7 @@ class_name ConstructionSite
 var remaining_costs: Dictionary = {}
 var remaining_build_time := 0.0
 var _build_task_created := false
-var _use_loaded_state := false
+var _delivery_tasks: Dictionary = {}
 
 @onready var sprite: Sprite2D = $Sprite
 
@@ -41,6 +41,7 @@ func receive_delivery(resource: String, amount: int) -> void:
 	remaining_costs[resource] = maxi(int(remaining_costs[resource]) - amount, 0)
 	if remaining_costs[resource] <= 0:
 		remaining_costs.erase(resource)
+	_sync_delivery_tasks()
 	if remaining_costs.is_empty() and not _build_task_created:
 		_create_build_task()
 
@@ -55,6 +56,7 @@ func _setup_from_blueprint() -> void:
 	remaining_costs = blueprint.costs.duplicate(true)
 	remaining_build_time = blueprint.build_time
 	_build_task_created = false
+	_delivery_tasks.clear()
 
 func _create_resource_tasks() -> void:
 	var task_board := _get_task_board()
@@ -62,15 +64,7 @@ func _create_resource_tasks() -> void:
 		return
 	for resource in remaining_costs.keys():
 		var amount := int(remaining_costs[resource])
-		if amount <= 0:
-			continue
-		var task := Task.new()
-		task.task_id = "%s_%s" % [str(get_instance_id()), resource]
-		task.task_type = "deliver_resource"
-		task.priority = 5
-		task.target_node_path = get_path()
-		task.payload = {"resource": resource, "amount": amount}
-		task_board.add_task(task)
+		_ensure_delivery_task(resource, amount, task_board)
 
 func _create_build_task() -> void:
 	var task_board := _get_task_board()
@@ -85,12 +79,41 @@ func _create_build_task() -> void:
 	task.payload = {"work": remaining_build_time}
 	task_board.add_task(task)
 
-func _apply_loaded_tasks() -> void:
-	if remaining_costs.is_empty():
-		if remaining_build_time > 0.0 and not _build_task_created:
-			_create_build_task()
+func _sync_delivery_tasks() -> void:
+	var task_board := _get_task_board()
+	if not task_board:
 		return
-	_create_resource_tasks()
+	for resource in _delivery_tasks.keys().duplicate():
+		if not remaining_costs.has(resource):
+			_complete_delivery_task(resource, task_board)
+	for resource in remaining_costs.keys():
+		_ensure_delivery_task(resource, int(remaining_costs[resource]), task_board)
+
+func _ensure_delivery_task(resource: String, amount: int, task_board: TaskBoard) -> void:
+	if amount <= 0:
+		_complete_delivery_task(resource, task_board)
+		return
+	if _delivery_tasks.has(resource):
+		var task := _delivery_tasks[resource]
+		if task:
+			task.payload = {"resource": resource, "amount": amount}
+			return
+	var new_task := Task.new()
+	new_task.task_id = "%s_%s" % [str(get_instance_id()), resource]
+	new_task.task_type = "deliver_resource"
+	new_task.priority = 5
+	new_task.target_node_path = get_path()
+	new_task.payload = {"resource": resource, "amount": amount}
+	_delivery_tasks[resource] = new_task
+	task_board.add_task(new_task)
+
+func _complete_delivery_task(resource: String, task_board: TaskBoard) -> void:
+	if not _delivery_tasks.has(resource):
+		return
+	var task := _delivery_tasks[resource]
+	if task:
+		task_board.complete_task(task)
+	_delivery_tasks.erase(resource)
 
 func _complete_construction() -> void:
 	if not blueprint or not blueprint.building_scene:

@@ -204,5 +204,9 @@ func get_seed() -> int:
 func set_seed(seed: int) -> void:
 	_apply_seed(seed)
 	if tile_map:
+		for node in get_tree().get_nodes_in_group("resource"):
+			if node is Node:
+				node.queue_free()
 		_generate_map()
+		_spawn_resources()
 		_update_game_state_biome()
