@@ -24,7 +24,7 @@ func assign_blueprint(new_blueprint: Blueprint) -> void:
 func receive_delivery(resource: String, amount: int) -> void:
 	if not remaining_costs.has(resource):
 		return
-	remaining_costs[resource] = max(int(remaining_costs[resource]) - amount, 0)
+	remaining_costs[resource] = maxi(int(remaining_costs[resource]) - amount, 0)
 	if remaining_costs[resource] <= 0:
 		remaining_costs.erase(resource)
 	if remaining_costs.is_empty() and not _build_task_created:
@@ -33,7 +33,7 @@ func receive_delivery(resource: String, amount: int) -> void:
 func perform_build_step(work_amount: float) -> void:
 	if remaining_build_time <= 0.0:
 		return
-	remaining_build_time = max(remaining_build_time - work_amount, 0.0)
+	remaining_build_time = maxf(remaining_build_time - work_amount, 0.0)
 	if remaining_build_time <= 0.0:
 		_complete_construction()
 

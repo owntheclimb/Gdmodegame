@@ -12,11 +12,12 @@ enum State { IDLE, WANDER, WORKING, DRAGGED, ROMANCE, EAT, COLLECT, DEPOSIT }
 
 var state: State = State.IDLE
 var target_position: Vector2
-var current_task: Task
+var current_task
 
 var carried_resource_type := ""
 var carried_amount := 0.0
 var target_resource: ResourceNode
+var romance_partner: Node2D
 
 var _idle_timer := 0.0
 var _idle_interval := 2.0
@@ -50,7 +51,7 @@ func _physics_process(delta: float) -> void:
 			_move_toward_target(delta)
 
 func _update_needs(delta: float) -> void:
-	hunger = max(hunger - delta * 0.5 * _get_hunger_rate_multiplier(), 0.0)
+	hunger = maxf(hunger - delta * 0.5 * _get_hunger_rate_multiplier(), 0.0)
 
 func _handle_idle(delta: float) -> void:
 	_idle_timer += delta
@@ -91,7 +92,7 @@ func _handle_idle(delta: float) -> void:
 	if not world:
 		return
 
-	for _i in 8:
+	for _i in range(8):
 		var candidate := global_position + Vector2(randf_range(-100.0, 100.0), randf_range(-100.0, 100.0))
 		if _is_position_walkable(world, candidate):
 			state = State.WANDER
@@ -117,7 +118,7 @@ func _finish_task_on_arrival() -> void:
 			var storage := _get_storage()
 			if storage:
 				var consumed := storage.consume("food", 20.0)
-				hunger = min(hunger + consumed, 100.0)
+				hunger = minf(hunger + consumed, 100.0)
 		State.COLLECT:
 			if target_resource and target_resource.is_inside_tree():
 				if target_resource.global_position.distance_to(global_position) < 10.0:

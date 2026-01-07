@@ -11,7 +11,7 @@ func get_random_traits(count: int) -> Array[Trait]:
 	var picked: Array[Trait] = []
 	if traits.is_empty():
 		return picked
-	for _i in count:
+	for _i in range(count):
 		picked.append(traits.pick_random())
 	return picked
 

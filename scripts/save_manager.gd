@@ -69,8 +69,8 @@ func load_game() -> void:
 
 	var villagers := get_tree().get_nodes_in_group("villager")
 	var saved_villagers: Array = data.get("villagers", [])
-	var count := min(villagers.size(), saved_villagers.size())
-	for i in count:
+	var count := mini(villagers.size(), saved_villagers.size())
+	for i in range(count):
 		var info: Dictionary = saved_villagers[i]
 		villagers[i].global_position = Vector2(info["position"][0], info["position"][1])
 		villagers[i].health = info["health"]
