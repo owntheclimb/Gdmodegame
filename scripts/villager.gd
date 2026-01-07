@@ -335,3 +335,8 @@ func _apply_mutation(trait_list: Array[Trait]) -> void:
 				available.remove_at(index)
 	if available.size() > 0:
 		trait_list.append(available.pick_random().duplicate())
+
+func _record_action(action: String) -> void:
+	var game_state := get_tree().get_first_node_in_group("game_state")
+	if game_state:
+		game_state.record_action(action)
