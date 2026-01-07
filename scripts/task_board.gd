@@ -103,6 +103,8 @@ func get_open_tasks() -> Array[Task]:
 func _register_existing_world_tasks() -> void:
 	for rock in get_tree().get_nodes_in_group("rock"):
 		_try_register_world_task(rock)
+	for tree in get_tree().get_nodes_in_group("tree"):
+		_try_register_world_task(tree)
 	for bush in get_tree().get_nodes_in_group("berry_bush"):
 		_try_register_world_task(bush)
 	for building in get_tree().get_nodes_in_group("building"):
@@ -116,6 +118,8 @@ func _try_register_world_task(node: Node) -> void:
 		return
 	if node.is_in_group("rock"):
 		add_task_from_world_object(node, "clear_rock", 6)
+	elif node.is_in_group("tree"):
+		add_task_from_world_object(node, "gather_wood", 5)
 	elif node.is_in_group("berry_bush"):
 		add_task_from_world_object(node, "harvest_berries", 4)
 	elif node.is_in_group("building"):

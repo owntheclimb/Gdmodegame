@@ -1,4 +1,4 @@
-extends ResourceNode
+extends WoodResource
 
 @export var wood_amount := 20.0
 
@@ -7,8 +7,7 @@ extends ResourceNode
 func _ready() -> void:
 	add_to_group("tree")
 	resource_type = "wood"
-	amount = wood_amount
-	respawn_scene = preload("res://scenes/Tree.tscn")
+	resource_amount = wood_amount
 	_setup_placeholder_sprite()
 	_register_task()
 
