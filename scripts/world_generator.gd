@@ -21,9 +21,6 @@ var moisture_noise := FastNoiseLite.new()
 var tileset: TileSet
 var loaded_chunks: Dictionary = {}
 @onready var tile_map: TileMap = $TileMap
-@onready var tree_scene: PackedScene = preload("res://scenes/Tree.tscn")
-@onready var rock_scene: PackedScene = preload("res://scenes/Rock.tscn")
-@onready var berry_scene: PackedScene = preload("res://scenes/BerryBush.tscn")
 var _world_seed := 0
 
 func _ready() -> void:
@@ -167,13 +164,6 @@ func _update_game_state_biome_at_position(world_position: Vector2) -> void:
 	var tile_coord := tile_map.local_to_map(tile_map.to_local(world_position))
 	_update_game_state_biome_at_tile(tile_coord)
 
-func get_biome_at_position(world_position: Vector2) -> String:
-	var tile_coord := tile_map.local_to_map(tile_map.to_local(world_position))
-	var atlas_coords := tile_map.get_cell_atlas_coords(0, tile_coord)
-	if atlas_coords == Vector2i(-1, -1):
-		return "grassland"
-	return _biome_from_tile(atlas_coords.x)
-
 func _update_game_state_biome_at_tile(tile_coord: Vector2i) -> void:
 	var atlas_coords := tile_map.get_cell_atlas_coords(0, tile_coord)
 	if atlas_coords == Vector2i(-1, -1):
@@ -215,5 +205,4 @@ func set_seed(seed: int) -> void:
 	_apply_seed(seed)
 	if tile_map:
 		_generate_map()
-		_spawn_resources()
 		_update_game_state_biome()

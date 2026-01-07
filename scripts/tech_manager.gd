@@ -36,7 +36,3 @@ func _process(_delta: float) -> void:
 		tech_tree.unlock("Exploration")
 	if game_state and game_state.get_action_count("scouted_area") >= 3:
 		tech_tree.unlock("Cartography")
-	if game_state and game_state.get_action_count("hunted_creature") >= 1:
-		tech_tree.unlock("Hunting")
-	if game_state and game_state.get_action_count("met_nomads") >= 1:
-		tech_tree.unlock("Tradecraft")

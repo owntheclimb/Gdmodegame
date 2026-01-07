@@ -281,8 +281,6 @@ func _handle_task_action() -> bool:
 			return _harvest_resource(target_node)
 		"harvest_berries":
 			return _harvest_resource(target_node)
-		"hunt_creature":
-			return _hunt_creature(target_node)
 		"maintain_building":
 			_record_action("maintained_building")
 			return true
@@ -339,19 +337,6 @@ func _perform_build_work(target_node: Node) -> bool:
 	if site.remaining_build_time > 0.0:
 		return false
 	return true
-
-func _hunt_creature(target_node: Node) -> bool:
-	if not (target_node is Creature):
-		return true
-	var creature := target_node as Creature
-	var damage := 8.0 * _get_speed_multiplier()
-	var defeated := creature.take_damage(damage)
-	if defeated:
-		var storage := _get_storage()
-		if storage:
-			storage.deposit(creature.resource_drop, creature.resource_amount)
-		_record_action("hunted_creature")
-	return defeated
 
 func _get_task_target_position(task: Task) -> Vector2:
 	var target_node := _get_task_target_node(task)

@@ -11,10 +11,7 @@ var objectives := [
 	{"id": "survive_days", "description": "Survive 3 days", "completed": false},
 	{"id": "unlock_farming", "description": "Unlock Farming", "completed": false},
 	{"id": "complete_event", "description": "Complete 1 task", "completed": false},
-	{"id": "grow_population", "description": "Reach a population of 3", "completed": false},
-	{"id": "hunt_creature", "description": "Hunt 1 creature", "completed": false},
-	{"id": "meet_nomads", "description": "Meet the nomads", "completed": false},
-	{"id": "advance_story", "description": "Reach Chapter 2 of the story", "completed": false}
+	{"id": "grow_population", "description": "Reach a population of 3", "completed": false}
 ]
 
 func _ready() -> void:
@@ -37,17 +34,11 @@ func _update_objectives() -> void:
 	if game_state:
 		_set_completed("survive_days", game_state.days_survived >= 3)
 		_set_completed("complete_event", game_state.get_action_count("completed_task") >= 1)
-		_set_completed("hunt_creature", game_state.get_action_count("hunted_creature") >= 1)
-		_set_completed("meet_nomads", game_state.get_action_count("met_nomads") >= 1)
 
 	_set_completed("unlock_farming", _has_tech("Farming"))
 
 	var villagers := get_tree().get_nodes_in_group("villager").size()
 	_set_completed("grow_population", villagers >= 3)
-
-	var story_manager := get_tree().get_first_node_in_group("story_manager")
-	if story_manager and story_manager.get_current_chapter_id() != "chapter_1":
-		_set_completed("advance_story", true)
 
 	objectives_updated.emit()
 

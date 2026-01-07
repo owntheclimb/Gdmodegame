@@ -68,6 +68,16 @@ static func default_templates() -> Array[EventTemplate]:
 		"met_nomads"
 	))
 	templates.append(_make_template(
+		"meadow_encampment",
+		"grassland",
+		"Nomad Encampment",
+		"Smoke rises from a small camp on the plain.",
+		"camp",
+		"Parley with Nomads",
+		2,
+		"scouted_area"
+	))
+	templates.append(_make_template(
 		"sea_ruins",
 		"coastal",
 		"Sea-Bleached Ruins",
@@ -157,6 +167,56 @@ static func default_templates() -> Array[EventTemplate]:
 		"wood",
 		8.0,
 		"recovered_cache"
+	))
+	templates.append(_make_template(
+		"tide_pool_grotto",
+		"coastal",
+		"Tide Pool Grotto",
+		"Strange shells ring a shallow grotto.",
+		"grotto",
+		"Gather Rare Shells",
+		2,
+		"gathered_food"
+	))
+	templates.append(_make_template(
+		"forest_shrine",
+		"forest",
+		"Mossy Shrine",
+		"A forgotten shrine hides beneath the canopy.",
+		"shrine",
+		"Cleanse Shrine",
+		3,
+		"scouted_area"
+	))
+	templates.append(_make_template(
+		"lost_hunter",
+		"forest",
+		"Lost Hunter",
+		"A lone hunter seeks the way back.",
+		"camp",
+		"Guide Hunter Home",
+		2,
+		"completed_task"
+	))
+	templates.append(_make_template(
+		"highland_outcrop",
+		"highlands",
+		"Windy Outcrop",
+		"Stone spires overlook the valley.",
+		"outcrop",
+		"Survey Outcrop",
+		2,
+		"scouted_area"
+	))
+	templates.append(_make_template(
+		"mountain_cache",
+		"highlands",
+		"Mountain Cache",
+		"A stash of tools lies wedged in the rocks.",
+		"cache",
+		"Recover Supplies",
+		3,
+		"gathered_stone"
 	))
 	return templates
 
