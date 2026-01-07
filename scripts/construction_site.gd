@@ -13,14 +13,27 @@ var _delivery_tasks: Dictionary = {}
 func _ready() -> void:
 	add_to_group("construction_site")
 	_setup_placeholder_sprite()
+	if _use_loaded_state:
+		_apply_loaded_tasks()
+		return
 	if blueprint:
 		_setup_from_blueprint()
 		_create_resource_tasks()
+
+func apply_loaded_state(saved_blueprint: Blueprint, saved_costs: Dictionary, saved_time: float, build_task_created := false) -> void:
+	_use_loaded_state = true
+	blueprint = saved_blueprint
+	remaining_costs = saved_costs.duplicate(true)
+	remaining_build_time = saved_time
+	_build_task_created = build_task_created
 
 func assign_blueprint(new_blueprint: Blueprint) -> void:
 	blueprint = new_blueprint
 	_setup_from_blueprint()
 	_create_resource_tasks()
+
+func is_build_task_created() -> bool:
+	return _build_task_created
 
 func receive_delivery(resource: String, amount: int) -> void:
 	if not remaining_costs.has(resource):

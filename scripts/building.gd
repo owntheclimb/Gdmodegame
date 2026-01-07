@@ -6,6 +6,7 @@ class_name Building
 @onready var sprite: Sprite2D = $Sprite
 
 func _ready() -> void:
+	add_to_group("building")
 	_setup_placeholder_sprite()
 
 func set_blueprint(new_blueprint: Blueprint) -> void:
