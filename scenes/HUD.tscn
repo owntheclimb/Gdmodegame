@@ -23,3 +23,15 @@ text = "Storage Food: --"
 
 [node name="Time" type="Label" parent="MarginContainer/VBoxContainer"]
 text = "Time: --"
+
+[node name="Story" type="Label" parent="MarginContainer/VBoxContainer"]
+text = "Story: --"
+
+[node name="Quests" type="Label" parent="MarginContainer/VBoxContainer"]
+text = "Quests: --"
+
+[node name="Factions" type="Label" parent="MarginContainer/VBoxContainer"]
+text = "Factions: --"
+
+[node name="World" type="Label" parent="MarginContainer/VBoxContainer"]
+text = "Biome: --"

@@ -19,10 +19,13 @@ func deposit(resource_type: String, amount: float) -> void:
 	match resource_type:
 		"food":
 			food += amount
+			_record_action("gathered_food")
 		"wood":
 			wood += amount
+			_record_action("gathered_wood")
 		"stone":
 			stone += amount
+			_record_action("gathered_stone")
 		_:
 			return
 	storage_changed.emit()
@@ -69,3 +72,8 @@ func _set_resources(data: Dictionary) -> void:
 	wood = float(data.get("wood", 0.0))
 	stone = float(data.get("stone", 0.0))
 	storage_changed.emit()
+
+func _record_action(action: String) -> void:
+	var game_state := get_tree().get_first_node_in_group("game_state")
+	if game_state:
+		game_state.record_action(action)
