@@ -6,15 +6,26 @@ class_name ConstructionSite
 var remaining_costs: Dictionary = {}
 var remaining_build_time := 0.0
 var _build_task_created := false
+var _use_loaded_state := false
 
 @onready var sprite: Sprite2D = $Sprite
 
 func _ready() -> void:
 	add_to_group("construction_site")
 	_setup_placeholder_sprite()
+	if _use_loaded_state:
+		_apply_loaded_tasks()
+		return
 	if blueprint:
 		_setup_from_blueprint()
 		_create_resource_tasks()
+
+func apply_loaded_state(saved_blueprint: Blueprint, saved_costs: Dictionary, saved_time: float, build_task_created := false) -> void:
+	_use_loaded_state = true
+	blueprint = saved_blueprint
+	remaining_costs = saved_costs.duplicate(true)
+	remaining_build_time = saved_time
+	_build_task_created = build_task_created
 
 func assign_blueprint(new_blueprint: Blueprint) -> void:
 	blueprint = new_blueprint
@@ -70,6 +81,13 @@ func _create_build_task() -> void:
 	task.target_node_path = get_path()
 	task.payload = {"work": remaining_build_time}
 	task_board.add_task(task)
+
+func _apply_loaded_tasks() -> void:
+	if remaining_costs.is_empty():
+		if remaining_build_time > 0.0 and not _build_task_created:
+			_create_build_task()
+		return
+	_create_resource_tasks()
 
 func _complete_construction() -> void:
 	if not blueprint or not blueprint.building_scene:
