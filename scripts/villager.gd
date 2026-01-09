@@ -1,4 +1,5 @@
 extends CharacterBody2D
+class_name Villager
 
 enum State { IDLE, WANDER, WORKING, DRAGGED, ROMANCE, EAT, COLLECT, DEPOSIT }
 
