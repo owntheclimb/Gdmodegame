@@ -28,6 +28,12 @@ func apply_loaded_state(saved_blueprint: Blueprint, saved_costs: Dictionary, sav
 	remaining_build_time = saved_time
 	_build_task_created = build_task_created
 
+func _apply_loaded_tasks() -> void:
+	if remaining_costs.is_empty() and not _build_task_created:
+		_create_build_task()
+	elif not remaining_costs.is_empty():
+		_create_resource_tasks()
+
 func assign_blueprint(new_blueprint: Blueprint) -> void:
 	blueprint = new_blueprint
 	_setup_from_blueprint()
@@ -95,7 +101,7 @@ func _ensure_delivery_task(resource: String, amount: int, task_board: TaskBoard)
 		_complete_delivery_task(resource, task_board)
 		return
 	if _delivery_tasks.has(resource):
-		var task := _delivery_tasks[resource]
+		var task: Task = _delivery_tasks[resource] as Task
 		if task:
 			task.payload = {"resource": resource, "amount": amount}
 			return
@@ -111,7 +117,7 @@ func _ensure_delivery_task(resource: String, amount: int, task_board: TaskBoard)
 func _complete_delivery_task(resource: String, task_board: TaskBoard) -> void:
 	if not _delivery_tasks.has(resource):
 		return
-	var task := _delivery_tasks[resource]
+	var task: Task = _delivery_tasks[resource] as Task
 	if task:
 		task_board.complete_task(task)
 	_delivery_tasks.erase(resource)
