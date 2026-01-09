@@ -411,23 +411,23 @@ func _is_position_walkable(world: Node, position: Vector2) -> bool:
 	return true
 
 func _is_hydrophobic() -> bool:
-	for trait in traits:
-		if trait and trait.hydrophobic:
+	for t in traits:
+		if t and t.hydrophobic:
 			return true
 	return false
 
 func _get_speed_multiplier() -> float:
 	var multiplier := 1.0
-	for trait in traits:
-		if trait:
-			multiplier *= trait.speed_multiplier
+	for t in traits:
+		if t:
+			multiplier *= t.speed_multiplier
 	return multiplier
 
 func _get_hunger_rate_multiplier() -> float:
 	var multiplier := 1.0
-	for trait in traits:
-		if trait:
-			multiplier *= trait.hunger_rate_multiplier
+	for t in traits:
+		if t:
+			multiplier *= t.hunger_rate_multiplier
 	return multiplier
 
 func _attempt_reproduction(partner: Node2D) -> void:
@@ -449,24 +449,24 @@ func _attempt_reproduction(partner: Node2D) -> void:
 func _merge_traits(parent_a: Array[Trait], parent_b: Array[Trait]) -> Array[Trait]:
 	var combined: Array[Trait] = []
 	var trait_map := {}
-	for trait in parent_a:
-		_register_trait(trait_map, trait)
-	for trait in parent_b:
-		_register_trait(trait_map, trait)
-	for trait in trait_map.values():
-		if trait:
-			combined.append(trait.duplicate())
+	for t in parent_a:
+		_register_trait(trait_map, t)
+	for t in parent_b:
+		_register_trait(trait_map, t)
+	for t in trait_map.values():
+		if t:
+			combined.append(t.duplicate())
 	_apply_mutation(combined)
 	return combined
 
-func _register_trait(trait_map: Dictionary, trait: Trait) -> void:
-	if not trait:
+func _register_trait(trait_map: Dictionary, t: Trait) -> void:
+	if not t:
 		return
-	var key := trait.id if trait.id != StringName() else StringName(trait.display_name)
+	var key := t.id if t.id != StringName() else StringName(t.display_name)
 	if key == StringName():
 		return
 	if not trait_map.has(key):
-		trait_map[key] = trait
+		trait_map[key] = t
 
 func _apply_mutation(trait_list: Array[Trait]) -> void:
 	if randf() >= mutation_chance:
@@ -477,12 +477,12 @@ func _apply_mutation(trait_list: Array[Trait]) -> void:
 		trait_list.remove_at(randi_range(0, trait_list.size() - 1))
 		return
 	var available := TRAIT_DATA.traits.duplicate()
-	for trait in trait_list:
+	for t in trait_list:
 		for index in range(available.size() - 1, -1, -1):
 			if not available[index]:
 				available.remove_at(index)
 				continue
-			if available[index].id == trait.id:
+			if available[index].id == t.id:
 				available.remove_at(index)
 	if available.size() > 0:
 		trait_list.append(available.pick_random().duplicate())

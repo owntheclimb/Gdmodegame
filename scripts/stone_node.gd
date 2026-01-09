@@ -5,10 +5,10 @@ extends ResourceNode
 @onready var sprite: Sprite2D = $Sprite
 
 func _ready() -> void:
-	add_to_group("stone")
 	resource_type = "stone"
-	amount = stone_amount
-	respawn_scene = preload("res://scenes/Stone.tscn")
+	resource_amount = stone_amount
+	super._ready()
+	add_to_group("stone")
 	_setup_placeholder_sprite()
 	_register_task()
 
