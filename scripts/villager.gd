@@ -482,7 +482,7 @@ func _apply_mutation(trait_list: Array[Trait]) -> void:
 	if randf() < 0.5 and trait_list.size() > 0:
 		trait_list.remove_at(randi_range(0, trait_list.size() - 1))
 		return
-	var available: Array[Trait] = TRAIT_DATA.traits.duplicate()
+	var available: Array = TRAIT_DATA.traits.duplicate()
 	for t in trait_list:
 		for index in range(available.size() - 1, -1, -1):
 			if not available[index]:

@@ -21,7 +21,7 @@ func _spawn_event() -> void:
 	var world := get_tree().get_first_node_in_group("world")
 	if not world:
 		return
-	var position := world.get_random_walkable_position()
+	var position: Vector2 = world.get_random_walkable_position()
 	var marker := marker_scene.instantiate()
 	marker.global_position = position
 	add_child(marker)

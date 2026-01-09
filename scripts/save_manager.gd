@@ -150,8 +150,8 @@ func load_game() -> void:
 		var info := saved_villagers[i]
 		if typeof(info) != TYPE_DICTIONARY:
 			continue
-		var position := _as_vector2(info.get("position", null), villagers[i].global_position)
-		villagers[i].global_position = position
+		var saved_position: Vector2 = _as_vector2(info.get("position", null), villagers[i].global_position)
+		villagers[i].global_position = saved_position
 		if _is_number(info.get("health", null)):
 			villagers[i].health = float(info.get("health"))
 		if _is_number(info.get("hunger", null)):

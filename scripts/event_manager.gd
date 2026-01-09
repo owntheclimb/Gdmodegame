@@ -7,8 +7,8 @@ signal event_created(event_info: Dictionary)
 @export var max_active_events := 3
 @export var event_location_scene: PackedScene
 
-var _templates: Array[EventTemplate] = []
-var _active_events: Array[Dictionary] = []
+var _templates: Array = []
+var _active_events: Array = []
 
 @onready var _timer := Timer.new()
 
@@ -115,7 +115,7 @@ func _spawn_location(template: EventTemplate, world: Node) -> Node2D:
 	location.reward_resource = template.reward_resource
 	location.reward_amount = template.reward_amount
 	location.reward_action = template.reward_action
-	var position := world.get_random_walkable_position()
+	var position: Vector2 = world.get_random_walkable_position()
 	location.global_position = position
 	get_tree().current_scene.add_child(location)
 	return location

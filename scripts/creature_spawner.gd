@@ -33,7 +33,7 @@ func _spawn_creature() -> void:
 	var world := _get_world()
 	if not world:
 		return
-	var position := world.get_random_walkable_position()
+	var position: Vector2 = world.get_random_walkable_position()
 	if position == Vector2.ZERO:
 		return
 	var creature := creature_scene.instantiate()

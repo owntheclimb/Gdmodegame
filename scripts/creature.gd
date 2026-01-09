@@ -31,14 +31,14 @@ func _physics_process(delta: float) -> void:
 		return
 	_handle_wander(delta)
 
-func _handle_wander(delta: float) -> void:
+func _handle_wander(_delta: float) -> void:
 	if _wander_timer >= 2.5 or global_position.distance_to(_wander_target) < 6.0:
 		_pick_new_wander_target()
 		_wander_timer = 0.0
 	velocity = ( _wander_target - global_position ).normalized() * max_speed
 	move_and_slide()
 
-func _handle_threat(delta: float, villager: Node2D) -> void:
+func _handle_threat(_delta: float, villager: Node2D) -> void:
 	match temperament:
 		Temperament.TIMID:
 			var flee_dir := (global_position - villager.global_position).normalized()
