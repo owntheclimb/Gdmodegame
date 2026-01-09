@@ -71,26 +71,20 @@ func is_walkable_world(world_position: Vector2, allow_water := true) -> bool:
 	return is_walkable(tile_coord, allow_water)
 
 func _setup_tileset() -> TileSet:
-	var image := Image.create(tile_size * 5, tile_size, false, Image.FORMAT_RGBA8)
-	image.fill(Color(0, 0, 0, 0))
-	image.fill_rect(Rect2i(0, 0, tile_size, tile_size), Color(0.1, 0.35, 0.8))
-	image.fill_rect(Rect2i(tile_size, 0, tile_size, tile_size), Color(0.85, 0.78, 0.5))
-	image.fill_rect(Rect2i(tile_size * 2, 0, tile_size, tile_size), Color(0.2, 0.7, 0.3))
-	image.fill_rect(Rect2i(tile_size * 3, 0, tile_size, tile_size), Color(0.12, 0.45, 0.2))
-	image.fill_rect(Rect2i(tile_size * 4, 0, tile_size, tile_size), Color(0.5, 0.5, 0.55))
-
-	var texture := ImageTexture.create_from_image(image)
+	# Load our custom terrain tileset (ordered: Water, Sand, Grass, Forest, Mountain)
+	var terrain_texture: Texture2D = load("res://assets/tilesets/terrain.png")
+	
 	var new_tileset := TileSet.new()
 	new_tileset.tile_size = Vector2i(tile_size, tile_size)
 
 	var atlas_source := TileSetAtlasSource.new()
-	atlas_source.texture = texture
+	atlas_source.texture = terrain_texture
 	atlas_source.texture_region_size = Vector2i(tile_size, tile_size)
-	atlas_source.create_tile(Vector2i(0, 0))
-	atlas_source.create_tile(Vector2i(1, 0))
-	atlas_source.create_tile(Vector2i(2, 0))
-	atlas_source.create_tile(Vector2i(3, 0))
-	atlas_source.create_tile(Vector2i(4, 0))
+	atlas_source.create_tile(Vector2i(0, 0))  # TILE_WATER
+	atlas_source.create_tile(Vector2i(1, 0))  # TILE_SAND
+	atlas_source.create_tile(Vector2i(2, 0))  # TILE_GRASS
+	atlas_source.create_tile(Vector2i(3, 0))  # TILE_FOREST
+	atlas_source.create_tile(Vector2i(4, 0))  # TILE_MOUNTAIN
 
 	new_tileset.add_source(atlas_source, 0)
 	return new_tileset

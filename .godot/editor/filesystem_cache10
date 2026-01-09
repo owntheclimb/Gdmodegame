@@ -2,7 +2,7 @@
 ::res://::1767976898
 README.md::TextFile::-1::1767969754::0::1::::<><><>0<>0<><>::
 ::res://assets/::1767976898
-::res://assets/sprites/::1767977014
+::res://assets/sprites/::1767977077
 berry_bush.png::CompressedTexture2D::4183040485391515472::1767977014::1767977077::1::::<><><>0<>0<>99aa55f906d0b2d5fac6ee340720c1e9<>res://.godot/imported/berry_bush.png-2ae56b1864826e53461421489e2da243.ctex::
 construction_site.png::CompressedTexture2D::4907048783496830042::1767977014::1767977077::1::::<><><>0<>0<>4effeab520cadbbf30ee6d26ec9b7903<>res://.godot/imported/construction_site.png-8dcd00c52d45f6c21aafc28e70beed55.ctex::
 creature.png::CompressedTexture2D::980975263621687575::1767977014::1767977077::1::::<><><>0<>0<>791edd9fc6f009cac19b2801553f2535<>res://.godot/imported/creature.png-1c55f157c67454a6a0aba35090076513.ctex::
@@ -12,7 +12,8 @@ rock.png::CompressedTexture2D::1650685261407491994::1767977014::1767977077::1:::
 storage.png::CompressedTexture2D::7491800490650511459::1767977014::1767977077::1::::<><><>0<>0<>8cb058b8c292ebf763e31ccb2af4ad94<>res://.godot/imported/storage.png-e09e0656dcd56c8dbc70b628e8647615.ctex::
 tree.png::CompressedTexture2D::5535722744431168930::1767977014::1767977077::1::::<><><>0<>0<>e8f62a639a907a6e5515b983432c9f1e<>res://.godot/imported/tree.png-15cb16b197553088007c6ba3ce2f75b0.ctex::
 villager.png::CompressedTexture2D::5619344926344258189::1767977014::1767977077::1::::<><><>0<>0<>d3449e8545b67670c999f21302d7da0b<>res://.godot/imported/villager.png-8f178a4020030fcdfb3358d7b2bc200b.ctex::
-::res://assets/tilesets/::1767976898
+::res://assets/tilesets/::1767977133
+terrain.png::CompressedTexture2D::1429375798579083990::1767977172::1767977197::1::::<><><>0<>0<>bbb1187ef72e7771e065a3e90f024b91<>res://.godot/imported/terrain.png-46f0265400eeda8223b42746603edb3e.ctex::
 ::res://resources/::1767969754
 hut_blueprint.tres::Resource/Blueprint::-1::1767975436::0::1::::<><><>0<>0<><>::res://scripts/blueprint.gd<>res://scenes/Building.tscn
 ::res://resources/traits/::1767969754
@@ -30,13 +31,13 @@ Game.tscn::PackedScene::-1::1767970196::0::1::::<><><>0<>0<><>::res://scripts/ga
 HUD.tscn::PackedScene::-1::1767969754::0::1::::<><><>0<>0<><>::res://scripts/hud.gd
 Rock.tscn::PackedScene::-1::1767977039::0::1::::<><><>0<>0<><>::res://scripts/rock.gd<>res://assets/sprites/rock.png
 RomanceManager.tscn::PackedScene::-1::1767969754::0::1::::<><><>0<>0<><>::res://scripts/romance_manager.gd
-Stone.tscn::PackedScene::-1::1767969754::0::1::::<><><>0<>0<><>::res://scripts/stone_node.gd
+Stone.tscn::PackedScene::-1::1767977092::0::1::::<><><>0<>0<><>::res://scripts/stone_node.gd<>res://assets/sprites/rock.png
 Storage.tscn::PackedScene::-1::1767977058::0::1::::<><><>0<>0<><>::res://scripts/storage.gd<>res://assets/sprites/storage.png
 TaskBoard.tscn::PackedScene::-1::1767969754::0::1::::<><><>0<>0<><>::res://scripts/task_board.gd
 Tree.tscn::PackedScene::-1::1767977036::0::1::::<><><>0<>0<><>::res://scripts/tree.gd<>res://assets/sprites/tree.png
 Villager.tscn::PackedScene::-1::1767977033::0::1::::<><><>0<>0<><>::res://scripts/villager.gd<>res://assets/sprites/villager.png
 World.tscn::PackedScene::-1::1767970621::0::1::::<><><>0<>0<><>::res://scripts/world_generator.gd
-::res://scripts/::1767977009
+::res://scripts/::1767977127
 asset_catalog.gd::GDScript::2818199995777478197::1767969754::0::1::::AssetCatalog<>Node<><>0<>0<><>::
 audio_manager.gd::GDScript::5757622121134195477::1767969754::0::1::::AudioManager<>Node<><>0<>0<><>::
 audio_settings.gd::GDScript::5391871389942716177::1767969754::0::1::::AudioSettings<>Resource<><>0<>0<><>::
@@ -86,7 +87,7 @@ tree.gd::GDScript::2134048921108653813::1767970621::0::1::::<>WoodResource<><>0<
 villager.gd::GDScript::7018980896931411423::1767976382::0::1::::Villager<>CharacterBody2D<><>0<>0<><>::
 wood_resource.gd::GDScript::4395383096025537885::1767969754::0::1::::WoodResource<>ResourceNode<><>0<>0<><>::
 world_chunk.gd::GDScript::2584132595821216706::1767969754::0::1::::<>TileMap<><>0<>0<><>::
-world_generator.gd::GDScript::2231306417826024021::1767975496::0::1::::<>Node2D<><>0<>0<><>::
+world_generator.gd::GDScript::2231306417826024021::1767977187::0::1::::<>Node2D<><>0<>0<><>::
 ::res://scripts/systems/::1767976305
 building_definition.gd::GDScript::6253647992750038865::1767976825::0::1::::BuildingDefinition<>Blueprint<><>0<>0<><>::
 morale_system.gd::GDScript::5068269271362604294::1767969754::0::1::::MoraleSystem<>Node<><>0<>0<><>::
