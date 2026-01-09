@@ -34,10 +34,10 @@ blueprint.gd::GDScript::2700268183582682482::1767969754::0::1::::Blueprint<>Reso
 building.gd::GDScript::6533166684563410674::1767969754::0::1::::Building<>Node2D<><>0<>0<><>::
 building_blueprint.gd::GDScript::3488690402989449629::1767969754::0::1::::BuildingBlueprint<>Resource<><>0<>0<><>::
 build_manager.gd::GDScript::6685051788559638145::1767969754::0::1::::BuildManager<>Node2D<><>0<>0<><>::
-camera_controller.gd::GDScript::4930766295537151510::1767976517::0::1::::CameraController<>Camera2D<><>0<>0<><>::
+camera_controller.gd::GDScript::4930766295537151510::1767976575::0::1::::CameraController<>Camera2D<><>0<>0<><>::
 construction_site.gd::GDScript::4468375799364159043::1767974750::0::1::::ConstructionSite<>Node2D<><>0<>0<><>::
 creature.gd::GDScript::7428133321085421634::1767976087::0::1::::Creature<>CharacterBody2D<><>0<>0<><>::
-creature_spawner.gd::GDScript::1807253431918778874::1767976521::0::1::::CreatureSpawner<>Node<><>0<>0<><>::
+creature_spawner.gd::GDScript::1807253431918778874::1767976575::0::1::::CreatureSpawner<>Node<><>0<>0<><>::
 day_night.gd::GDScript::3230282512822111464::1767969754::0::1::::DayNightCycle<>Node<><>0<>0<><>::
 event_location.gd::GDScript::1869722105803081973::1767969754::0::1::::EventLocation<>Node2D<><>0<>0<><>::
 event_manager.gd::GDScript::8357719929130661881::1767976087::0::1::::EventManager<>Node<><>0<>0<><>::
@@ -49,7 +49,7 @@ faction_manager.gd::GDScript::6104349227518523424::1767975727::0::1::::FactionMa
 food_resource.gd::GDScript::1089906584015888679::1767969754::0::1::::FoodResource<>ResourceNode<><>0<>0<><>::
 game.gd::GDScript::6712063315502477044::1767969754::0::1::::<>Node2D<><>0<>0<><>::
 game_state.gd::GDScript::7803857985376537546::1767969754::0::1::::GameState<>Node<><>0<>0<><>::
-hud.gd::GDScript::6873167635135086451::1767976524::0::1::::<>CanvasLayer<><>0<>0<><>::
+hud.gd::GDScript::6873167635135086451::1767976575::0::1::::<>CanvasLayer<><>0<>0<><>::
 objective_manager.gd::GDScript::8257126798264114722::1767969754::0::1::::ObjectiveManager<>Node<><>0<>0<><>::
 population_manager.gd::GDScript::6022497607400763297::1767969754::0::1::::PopulationManager<>Node<><>0<>0<><>::
 quest.gd::GDScript::2159266686694615302::1767969754::0::1::::Quest<>Resource<><>0<>0<><>::
@@ -57,8 +57,8 @@ quest_manager.gd::GDScript::538165342831435604::1767976382::0::1::::QuestManager
 resource_node.gd::GDScript::5385797802756006054::1767969754::0::1::::ResourceNode<>Area2D<><>0<>0<><>::
 rock.gd::GDScript::1150269829772535165::1767969754::0::1::::<>StoneResource<><>0<>0<><>::
 romance_manager.gd::GDScript::1189277132158397809::1767969754::0::1::::RomanceManager<>Node<><>0<>0<><>::
-save_manager.gd::GDScript::1985203782400313290::1767976546::0::1::::SaveManager<>Node<><>0<>0<><>::
-selection_manager.gd::GDScript::7288752236997148055::1767976525::0::1::::SelectionManager<>Node2D<><>0<>0<><>::
+save_manager.gd::GDScript::1985203782400313290::1767976575::0::1::::SaveManager<>Node<><>0<>0<><>::
+selection_manager.gd::GDScript::7288752236997148055::1767976575::0::1::::SelectionManager<>Node2D<><>0<>0<><>::
 stone_node.gd::GDScript::8115229902681622398::1767970858::0::1::::<>ResourceNode<><>0<>0<><>::
 stone_resource.gd::GDScript::6238787104998747012::1767969754::0::1::::StoneResource<>ResourceNode<><>0<>0<><>::
 storage.gd::GDScript::625855876842678920::1767969754::0::1::::Storage<>Node2D<><>0<>0<><>::
@@ -76,6 +76,6 @@ wood_resource.gd::GDScript::4395383096025537885::1767969754::0::1::::WoodResourc
 world_chunk.gd::GDScript::2584132595821216706::1767969754::0::1::::<>TileMap<><>0<>0<><>::
 world_generator.gd::GDScript::2231306417826024021::1767975496::0::1::::<>Node2D<><>0<>0<><>::
 ::res://scripts/systems/::1767976305
-building_definition.gd::GDScript::6253647992750038865::1767976491::0::1::::BuildingDefinition<>Blueprint<><>0<>0<><>::
+building_definition.gd::GDScript::6253647992750038865::1767976789::0::1::::BuildingDefinition<>Blueprint<><>0<>0<><>::
 morale_system.gd::GDScript::5068269271362604294::1767969754::0::1::::MoraleSystem<>Node<><>0<>0<><>::
-resource_definition.gd::GDScript::6951390661303196412::1767976513::0::1::::ResourceDefinition<>Node<><>0<>0<><>::
+resource_definition.gd::GDScript::6951390661303196412::1767976575::0::1::::ResourceDefinition<>Node<><>0<>0<><>::

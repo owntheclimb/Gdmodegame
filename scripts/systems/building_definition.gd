@@ -87,45 +87,18 @@ var utility_data: Utility = null
 
 # Static building registry
 static var _buildings_database: Dictionary = {}
+static var _initialized: bool = false
 
 func _init():
-	_initialize_buildings_database()
+	pass
 
-# Initialize the buildings database with all available buildings
-func _initialize_buildings_database() -> void:
-	if _buildings_database.is_empty():
-		# Residential Buildings
-		var hut = _create_hut()
-		var cottage = _create_cottage()
-		
-		# Production Buildings
-		var farm = _create_farm()
-		var mill = _create_mill()
-		var blacksmith = _create_blacksmith()
-		var stable = _create_stable()
-		var workshop = _create_workshop()
-		
-		# Storage Buildings
-		var granary = _create_granary()
-		var warehouse = _create_warehouse()
-		
-		# Defense Buildings
-		var watchtower = _create_watchtower()
-		var barracks = _create_barracks()
-		
-		# Utility/Religious Buildings
-		var temple = _create_temple()
-		var shrine = _create_shrine()
-		var well = _create_well()
-		var library = _create_library()
-		var bathhouse = _create_bathhouse()
-		var marketplace = _create_marketplace()
-		
-		# Register all buildings
-		for building in [hut, cottage, farm, mill, blacksmith, stable, workshop, 
-						granary, warehouse, watchtower, barracks, temple, shrine, 
-						well, library, bathhouse, marketplace]:
-			_buildings_database[building.building_id] = building
+# Initialize the buildings database with all available buildings (call lazily)
+static func _ensure_initialized() -> void:
+	if _initialized:
+		return
+	_initialized = true
+	# Buildings will be registered on first access via get_building()
+	# To avoid infinite recursion, we don't pre-create all buildings here
 
 # ============== Building Creation Methods ==============
 
@@ -464,12 +437,38 @@ func _create_marketplace() -> BuildingDefinition:
 
 # ============== Public Methods ==============
 
-# Get a specific building by ID
+# Get a specific building by ID (creates on-demand to avoid infinite recursion)
 func get_building(building_id: String) -> BuildingDefinition:
 	if building_id in _buildings_database:
 		return _buildings_database[building_id]
+	# Lazy create the building if not in database
+	var building: BuildingDefinition = _create_building_by_id(building_id)
+	if building:
+		_buildings_database[building_id] = building
+		return building
 	push_error("Building not found: " + building_id)
 	return null
+
+func _create_building_by_id(building_id: String) -> BuildingDefinition:
+	match building_id:
+		"hut": return _create_hut()
+		"cottage": return _create_cottage()
+		"farm": return _create_farm()
+		"mill": return _create_mill()
+		"blacksmith": return _create_blacksmith()
+		"stable": return _create_stable()
+		"workshop": return _create_workshop()
+		"granary": return _create_granary()
+		"warehouse": return _create_warehouse()
+		"watchtower": return _create_watchtower()
+		"barracks": return _create_barracks()
+		"temple": return _create_temple()
+		"shrine": return _create_shrine()
+		"well": return _create_well()
+		"library": return _create_library()
+		"bathhouse": return _create_bathhouse()
+		"marketplace": return _create_marketplace()
+		_: return null
 
 # Get all buildings
 func get_all_buildings() -> Dictionary:
