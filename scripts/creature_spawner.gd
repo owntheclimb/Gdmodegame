@@ -55,7 +55,7 @@ func _configure_creature(creature: Node, biome: String) -> void:
 	creature.resource_drop = selection["resource"]
 	creature.resource_amount = selection["amount"]
 
-func _get_catalog_for_biome(biome: String) -> Array[Dictionary]:
+func _get_catalog_for_biome(biome: String) -> Array:
 	match biome:
 		"forest":
 			return [

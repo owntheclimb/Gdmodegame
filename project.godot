@@ -20,3 +20,15 @@ click={
 "deadzone": 0.5,
 "events": [Object(InputEventMouseButton,"button_index":1,"pressed":true)]
 }
+save_game={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"keycode":4194320,"pressed":true,"ctrl_pressed":true)]
+}
+load_game={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"keycode":4194316,"pressed":true,"ctrl_pressed":true)]
+}
+place_building={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"keycode":66)]
+}

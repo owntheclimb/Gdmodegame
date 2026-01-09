@@ -30,7 +30,7 @@ const DEFAULT_FACTIONS := [
 	}
 ]
 
-var factions: Array[Dictionary] = []
+var factions: Array = []
 
 func _ready() -> void:
 	add_to_group("faction_manager")
