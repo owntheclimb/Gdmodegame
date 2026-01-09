@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_0u2dp"]
 [ext_resource type="PackedScene" path="res://scenes/World.tscn" id="1_xv4j4"]
@@ -6,20 +6,24 @@
 [ext_resource type="PackedScene" path="res://scenes/BerryBush.tscn" id="3_6d4l6"]
 [ext_resource type="PackedScene" path="res://scenes/Rock.tscn" id="4_3k2n2"]
 [ext_resource type="Script" path="res://scripts/storage.gd" id="5_1hwdm"]
+[ext_resource type="Script" path="res://scripts/game_state.gd" id="6_gsstate"]
+[ext_resource type="PackedScene" path="res://scenes/TaskBoard.tscn" id="7_tboard"]
+[ext_resource type="PackedScene" path="res://scenes/ConstructionSite.tscn" id="8_csite"]
+[ext_resource type="Resource" path="res://resources/hut_blueprint.tres" id="9_blueprint"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_0u2dp")
 
 [node name="GameState" type="Node" parent="."]
-script = ExtResource("8_3dr42")
+script = ExtResource("6_gsstate")
 
 [node name="World" parent="." instance=ExtResource("1_xv4j4")]
 
-[node name="TaskBoard" parent="." instance=ExtResource("5_dioqb")]
+[node name="TaskBoard" parent="." instance=ExtResource("7_tboard")]
 
-[node name="ConstructionSite" parent="." instance=ExtResource("6_xm8a0")]
+[node name="ConstructionSite" parent="." instance=ExtResource("8_csite")]
 position = Vector2(220, 260)
-blueprint = ExtResource("7_q3gik")
+blueprint = ExtResource("9_blueprint")
 
 [node name="Villager" parent="." instance=ExtResource("2_1hh3x")]
 position = Vector2(200, 200)

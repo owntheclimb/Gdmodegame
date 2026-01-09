@@ -10,6 +10,11 @@ extends Node2D
 @export var initial_berry_bushes := 22
 
 const WorldChunk := preload("res://scripts/world_chunk.gd")
+
+var tree_scene: PackedScene = preload("res://scenes/Tree.tscn")
+var rock_scene: PackedScene = preload("res://scenes/Rock.tscn")
+var berry_scene: PackedScene = preload("res://scenes/BerryBush.tscn")
+
 const TILE_WATER := 0
 const TILE_SAND := 1
 const TILE_GRASS := 2
