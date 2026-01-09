@@ -13,8 +13,8 @@ class_name EventTemplate
 @export var reward_amount := 0.0
 @export var reward_action := ""
 
-static func default_templates() -> Array[EventTemplate]:
-	var templates: Array[EventTemplate] = []
+static func default_templates() -> Array:
+	var templates: Array = []
 	templates.append(_make_template(
 		"ruins_overgrown",
 		"grassland",

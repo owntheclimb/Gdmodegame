@@ -1,14 +1,14 @@
 extends Node
 class_name TraitsDB
 
-var traits: Array[Trait] = []
+var traits: Array = []
 
 func _ready() -> void:
 	add_to_group("traits_db")
 	_seed_traits()
 
-func get_random_traits(count: int) -> Array[Trait]:
-	var picked: Array[Trait] = []
+func get_random_traits(count: int) -> Array:
+	var picked: Array = []
 	if traits.is_empty():
 		return picked
 	for _i in range(count):

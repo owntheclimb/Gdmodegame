@@ -8,7 +8,7 @@ enum State { IDLE, WANDER, WORKING, DRAGGED, ROMANCE, EAT, COLLECT, DEPOSIT }
 @export var hunger := 100.0
 @export var age := 18
 @export var gender := "Female"
-@export var traits: Array[Trait] = []
+@export var traits: Array = []
 @export var mutation_chance := 0.15
 
 var state: State = State.IDLE
@@ -452,8 +452,8 @@ func _attempt_reproduction(partner: Node2D) -> void:
 	child.traits = _merge_traits(traits, partner.traits)
 	get_parent().add_child(child)
 
-func _merge_traits(parent_a: Array[Trait], parent_b: Array[Trait]) -> Array[Trait]:
-	var combined: Array[Trait] = []
+func _merge_traits(parent_a: Array, parent_b: Array) -> Array:
+	var combined: Array = []
 	var trait_map := {}
 	for t in parent_a:
 		_register_trait(trait_map, t)
@@ -474,7 +474,7 @@ func _register_trait(trait_map: Dictionary, t: Trait) -> void:
 	if not trait_map.has(key):
 		trait_map[key] = t
 
-func _apply_mutation(trait_list: Array[Trait]) -> void:
+func _apply_mutation(trait_list: Array) -> void:
 	if randf() >= mutation_chance:
 		return
 	if not TRAIT_DATA or TRAIT_DATA.traits.is_empty():

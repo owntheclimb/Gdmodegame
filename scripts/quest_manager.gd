@@ -3,7 +3,7 @@ class_name QuestManager
 
 signal quest_completed(quest: Quest)
 
-var quests: Array[Quest] = []
+var quests: Array = []
 
 func _ready() -> void:
 	add_to_group("quest_manager")

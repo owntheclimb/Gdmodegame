@@ -6,7 +6,7 @@ signal task_completed(task: Task)
 
 @export var villager_claim_cooldown := 1.5
 
-var _tasks: Array[Task] = []
+var _tasks: Array = []
 var _tasks_by_target: Dictionary = {}
 var _villager_last_claim: Dictionary = {}
 
@@ -95,7 +95,7 @@ func complete_task(task: Task) -> void:
 	if task.target_node_path != NodePath() and _tasks_by_target.has(task.target_node_path):
 		_tasks_by_target.erase(task.target_node_path)
 
-func get_open_tasks() -> Array[Task]:
+func get_open_tasks() -> Array:
 	return _tasks.filter(func(t: Task) -> bool:
 		return t.status == Task.TaskStatus.OPEN
 	)
