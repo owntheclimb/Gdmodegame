@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/berry_bush.gd" id="1_5n8vv"]
-[ext_resource type="Texture2D" path="res://assets/sprites/berry_bush.png" id="2_sprite"]
+[ext_resource type="Texture2D" path="res://assets/kenney/kenney_tiny-town/Tiles/tile_0083.png" id="2_sprite"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1v5if"]
 radius = 10.0

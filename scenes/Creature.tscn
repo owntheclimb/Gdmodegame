@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/creature.gd" id="1_creature"]
-[ext_resource type="Texture2D" path="res://assets/sprites/creature.png" id="2_sprite"]
+[ext_resource type="Texture2D" path="res://assets/kenney/Farm RPG FREE 16x16 - Tiny Asset Pack/Farm RPG FREE 16x16 - Tiny Asset Pack/Farm Animals/Female Cow Brown.png" id="2_sprite"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_crtr"]
 radius = 8.0

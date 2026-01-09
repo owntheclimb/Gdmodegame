@@ -71,8 +71,8 @@ func is_walkable_world(world_position: Vector2, allow_water := true) -> bool:
 	return is_walkable(tile_coord, allow_water)
 
 func _setup_tileset() -> TileSet:
-	# Load our custom terrain tileset (ordered: Water, Sand, Grass, Forest, Mountain)
-	var terrain_texture: Texture2D = load("res://assets/tilesets/terrain.png")
+	# Use Kenney Tiny Town tilemap (16x16 tiles in an 11x12 grid)
+	var terrain_texture: Texture2D = load("res://assets/kenney/kenney_tiny-town/Tilemap/tilemap_packed.png")
 	
 	var new_tileset := TileSet.new()
 	new_tileset.tile_size = Vector2i(tile_size, tile_size)
@@ -80,11 +80,14 @@ func _setup_tileset() -> TileSet:
 	var atlas_source := TileSetAtlasSource.new()
 	atlas_source.texture = terrain_texture
 	atlas_source.texture_region_size = Vector2i(tile_size, tile_size)
-	atlas_source.create_tile(Vector2i(0, 0))  # TILE_WATER
-	atlas_source.create_tile(Vector2i(1, 0))  # TILE_SAND
-	atlas_source.create_tile(Vector2i(2, 0))  # TILE_GRASS
-	atlas_source.create_tile(Vector2i(3, 0))  # TILE_FOREST
-	atlas_source.create_tile(Vector2i(4, 0))  # TILE_MOUNTAIN
+	
+	# Map our tile types to Tiny Town tilemap positions
+	# Row 0: terrain tiles (grass, dirt, water, etc)
+	atlas_source.create_tile(Vector2i(1, 7))   # TILE_WATER - blue water
+	atlas_source.create_tile(Vector2i(2, 0))   # TILE_SAND - sand/dirt
+	atlas_source.create_tile(Vector2i(0, 0))   # TILE_GRASS - green grass
+	atlas_source.create_tile(Vector2i(1, 0))   # TILE_FOREST - darker grass
+	atlas_source.create_tile(Vector2i(6, 7))   # TILE_MOUNTAIN - stone/mountain
 
 	new_tileset.add_source(atlas_source, 0)
 	return new_tileset
