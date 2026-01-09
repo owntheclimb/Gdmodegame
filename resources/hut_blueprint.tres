@@ -7,5 +7,5 @@
 script = ExtResource("1_17y04")
 name = "Hut"
 build_time = 6.0
-costs = {"Wood": 5, "Stone": 2}
+costs = {"wood": 5, "stone": 2}
 building_scene = ExtResource("2_3awpl")
