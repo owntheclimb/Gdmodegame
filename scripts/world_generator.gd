@@ -140,12 +140,12 @@ func _spawn_resource_set(scene: PackedScene, count: int, preferred_tiles: Array[
 	if not scene or count <= 0:
 		return
 	for _i in range(count):
-		var position := _get_random_walkable_position_for_tiles(preferred_tiles, 80)
-		if position == Vector2.ZERO:
+		var spawn_pos := _get_random_walkable_position_for_tiles(preferred_tiles, 80)
+		if spawn_pos == Vector2.ZERO:
 			continue
 		var instance := scene.instantiate()
 		if instance is Node2D:
-			instance.global_position = position
+			instance.global_position = spawn_pos
 		get_tree().current_scene.add_child(instance)
 
 func _get_random_walkable_position_for_tiles(preferred_tiles: Array[int], max_attempts := 80) -> Vector2:
@@ -200,18 +200,18 @@ func _get_focus_position() -> Vector2:
 	var center := Vector2(map_width * tile_size / 2.0, map_height * tile_size / 2.0)
 	return center
 
-func _apply_seed(seed: int) -> void:
-	_world_seed = seed
-	noise.seed = seed
+func _apply_seed(new_seed: int) -> void:
+	_world_seed = new_seed
+	noise.seed = new_seed
 	noise.frequency = 0.04
-	moisture_noise.seed = seed + 1337
+	moisture_noise.seed = new_seed + 1337
 	moisture_noise.frequency = 0.06
 
 func get_seed() -> int:
 	return _world_seed
 
-func set_seed(seed: int) -> void:
-	_apply_seed(seed)
+func set_seed(new_seed: int) -> void:
+	_apply_seed(new_seed)
 	if tile_map:
 		for node in get_tree().get_nodes_in_group("resource"):
 			if node is Node:

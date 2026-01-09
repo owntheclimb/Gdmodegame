@@ -229,9 +229,9 @@ static func _make_template(
 		task_type: String,
 		priority: int,
 		related_action: String,
-		reward_resource: String,
-		reward_amount: float,
-		reward_action: String
+		reward_resource: String = "",
+		reward_amount: float = 0.0,
+		reward_action: String = ""
 	) -> EventTemplate:
 	var template := EventTemplate.new()
 	template.template_id = template_id

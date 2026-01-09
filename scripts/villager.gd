@@ -101,7 +101,7 @@ func _handle_idle(delta: float) -> void:
 			target_position = candidate
 			return
 
-func _move_toward_target(delta: float) -> void:
+func _move_toward_target(_delta: float) -> void:
 	var world := _get_world()
 	if world and not _is_position_walkable(world, target_position):
 		state = State.IDLE
@@ -405,10 +405,10 @@ func _initialize_traits() -> void:
 		if selection:
 			traits = [selection.duplicate()]
 
-func _is_position_walkable(world: Node, position: Vector2) -> bool:
+func _is_position_walkable(world: Node, check_pos: Vector2) -> bool:
 	var allow_water := not _is_hydrophobic()
 	if world.has_method("is_walkable_world"):
-		return world.is_walkable_world(position, allow_water)
+		return world.is_walkable_world(check_pos, allow_water)
 	return true
 
 func _is_hydrophobic() -> bool:

@@ -19,19 +19,19 @@ func _seed_traits() -> void:
 	traits.clear()
 
 	var night_owl := Trait.new()
-	night_owl.name = "Night Owl"
-	night_owl.description = "Works better at night."
-	night_owl.hunger_multiplier = 0.9
+	night_owl.id = &"night_owl"
+	night_owl.display_name = "Night Owl"
+	night_owl.hunger_rate_multiplier = 0.9
 	traits.append(night_owl)
 
 	var sprinter := Trait.new()
-	sprinter.name = "Sprinter"
-	sprinter.description = "Moves faster than average."
+	sprinter.id = &"sprinter"
+	sprinter.display_name = "Sprinter"
 	sprinter.speed_multiplier = 1.2
 	traits.append(sprinter)
 
 	var hearty := Trait.new()
-	hearty.name = "Hearty"
-	hearty.description = "Gets hungry more slowly."
-	hearty.hunger_multiplier = 0.8
+	hearty.id = &"hearty"
+	hearty.display_name = "Hearty"
+	hearty.hunger_rate_multiplier = 0.8
 	traits.append(hearty)
