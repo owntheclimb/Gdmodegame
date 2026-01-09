@@ -25,4 +25,5 @@ speed_multiplier = 0.95
 hunger_rate_multiplier = 0.85
 
 [resource]
+script = ExtResource("1_0b1le")
 traits = [SubResource("Resource_1"), SubResource("Resource_2"), SubResource("Resource_3")]

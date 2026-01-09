@@ -400,9 +400,14 @@ func _setup_placeholder_sprite() -> void:
 func _initialize_traits() -> void:
 	if not traits.is_empty():
 		return
-	if TRAIT_DATA and TRAIT_DATA.traits.size() > 0 and randf() < 0.5:
-		var selection: Trait = TRAIT_DATA.traits.pick_random()
-		if selection:
+	if not TRAIT_DATA:
+		return
+	if not ("traits" in TRAIT_DATA):
+		return
+	var trait_list: Array = TRAIT_DATA.traits
+	if trait_list.size() > 0 and randf() < 0.5:
+		var selection = trait_list.pick_random()
+		if selection and selection is Trait:
 			traits = [selection.duplicate()]
 
 func _is_position_walkable(world: Node, check_pos: Vector2) -> bool:

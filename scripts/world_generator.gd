@@ -146,7 +146,7 @@ func _spawn_resource_set(scene: PackedScene, count: int, preferred_tiles: Array[
 		var instance := scene.instantiate()
 		if instance is Node2D:
 			instance.global_position = spawn_pos
-		get_tree().current_scene.add_child(instance)
+		get_tree().current_scene.call_deferred("add_child", instance)
 
 func _get_random_walkable_position_for_tiles(preferred_tiles: Array[int], max_attempts := 80) -> Vector2:
 	for _i in range(max_attempts):
@@ -162,6 +162,7 @@ func _get_random_walkable_position_for_tiles(preferred_tiles: Array[int], max_at
 	return Vector2.ZERO
 
 func _update_game_state_biome() -> void:
+	@warning_ignore("integer_division")
 	var center := Vector2i(map_width / 2, map_height / 2)
 	_update_game_state_biome_at_tile(center)
 
