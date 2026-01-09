@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_0u2dp"]
 [ext_resource type="PackedScene" path="res://scenes/World.tscn" id="1_xv4j4"]
@@ -10,6 +10,9 @@
 [ext_resource type="PackedScene" path="res://scenes/TaskBoard.tscn" id="7_tboard"]
 [ext_resource type="PackedScene" path="res://scenes/ConstructionSite.tscn" id="8_csite"]
 [ext_resource type="Resource" path="res://resources/hut_blueprint.tres" id="9_blueprint"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ActionMenu.tscn" id="10_amenu"]
+[ext_resource type="PackedScene" path="res://scenes/ui/QuestTracker.tscn" id="11_qtrack"]
+[ext_resource type="PackedScene" path="res://scenes/ui/CharacterPanel.tscn" id="12_cpanel"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_0u2dp")
@@ -58,3 +61,9 @@ text = "Wood: 0"
 
 [node name="StoneLabel" type="Label" parent="UI/StoragePanel"]
 text = "Stone: 0"
+
+[node name="ActionMenu" parent="." instance=ExtResource("10_amenu")]
+
+[node name="QuestTracker" parent="." instance=ExtResource("11_qtrack")]
+
+[node name="CharacterPanel" parent="." instance=ExtResource("12_cpanel")]

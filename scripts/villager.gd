@@ -4,12 +4,24 @@ class_name Villager
 enum State { IDLE, WANDER, WORKING, DRAGGED, ROMANCE, EAT, COLLECT, DEPOSIT }
 
 @export var max_speed := 60.0
-@export var health := 100.0
-@export var hunger := 100.0
 @export var age := 18
 @export var gender := "Female"
 @export var traits: Array = []
 @export var mutation_chance := 0.15
+
+# 8 NEEDS SYSTEM (0-100 scale, 100 = fully satisfied)
+@export var health := 100.0          # Physical wellbeing
+@export var hunger := 100.0          # Food satisfaction
+@export var energy := 100.0          # Stamina/tiredness
+@export var happiness := 75.0        # Overall mood
+@export var social := 50.0           # Loneliness (increases near others)
+@export var comfort := 50.0          # Housing/clothing quality
+@export var safety := 80.0           # Fear level (decreases near threats)
+@export var purpose := 50.0          # Job satisfaction
+
+# Need thresholds for speech bubbles
+const NEED_CRITICAL := 20.0
+const NEED_LOW := 40.0
 
 var state: State = State.IDLE
 var target_position: Vector2
@@ -35,11 +47,18 @@ var is_pregnant := false
 
 const TRAIT_DATA := preload("res://resources/traits/trait_data.tres")
 const VILLAGER_SCENE := preload("res://scenes/Villager.tscn")
+const SpeechBubbleScript := preload("res://scripts/ui/speech_bubble.gd")
 
 @onready var drop_detector: Area2D = $DropDetector
 @onready var sprite: Sprite2D = $Sprite
 @onready var selection_ring: Node2D = null
 @onready var task_indicator: TaskIndicator = null
+@onready var speech_bubble: Node2D = null
+
+# Speech bubble timers
+var _last_bubble_time := 0.0
+var _bubble_cooldown := 8.0  # Seconds between bubbles
+var _thought_timer := 0.0
 
 func _ready() -> void:
 	randomize()
@@ -47,6 +66,7 @@ func _ready() -> void:
 	_setup_placeholder_sprite()
 	_setup_selection_ring()
 	_setup_task_indicator()
+	_setup_speech_bubble()
 	_initialize_traits()
 	state = State.IDLE
 	# Enable input for this body
@@ -69,7 +89,44 @@ func _physics_process(delta: float) -> void:
 			_move_toward_target(delta)
 
 func _update_needs(delta: float) -> void:
+	# Hunger decreases over time
 	hunger = maxf(hunger - delta * 0.5 * _get_hunger_rate_multiplier(), 0.0)
+	
+	# Energy decreases when working, increases when idle
+	if state == State.WORKING or state == State.COLLECT:
+		energy = maxf(energy - delta * 0.3, 0.0)
+	elif state == State.IDLE:
+		energy = minf(energy + delta * 0.2, 100.0)
+	
+	# Health decreases if hunger or energy is critical
+	if hunger < NEED_CRITICAL or energy < NEED_CRITICAL:
+		health = maxf(health - delta * 0.1, 0.0)
+	elif health < 100.0 and hunger > 50.0 and energy > 50.0:
+		health = minf(health + delta * 0.05, 100.0)
+	
+	# Happiness affected by needs
+	var happiness_target := (hunger + energy + health + social + comfort + safety + purpose) / 7.0
+	happiness = lerpf(happiness, happiness_target, delta * 0.1)
+	
+	# Social need - decreases when alone
+	var nearby_villagers := _count_nearby_villagers()
+	if nearby_villagers > 0:
+		social = minf(social + delta * 0.5 * nearby_villagers, 100.0)
+	else:
+		social = maxf(social - delta * 0.1, 0.0)
+	
+	# Purpose increases when working
+	if state == State.WORKING:
+		purpose = minf(purpose + delta * 0.3, 100.0)
+	else:
+		purpose = maxf(purpose - delta * 0.05, 0.0)
+	
+	# Update thought timer for speech bubbles
+	_thought_timer += delta
+	_last_bubble_time += delta
+	
+	# Check if we should show a bubble
+	_check_need_bubbles()
 
 func _handle_idle(delta: float) -> void:
 	_idle_timer += delta
@@ -427,6 +484,138 @@ func _setup_task_indicator() -> void:
 	indicator.set_script(preload("res://scripts/task_indicator.gd"))
 	add_child(indicator)
 	task_indicator = indicator as TaskIndicator
+
+func _setup_speech_bubble() -> void:
+	# Create speech bubble as a child node
+	var bubble := Node2D.new()
+	bubble.name = "SpeechBubble"
+	bubble.z_index = 20
+	bubble.set_script(SpeechBubbleScript)
+	add_child(bubble)
+	speech_bubble = bubble
+	if speech_bubble.has_method("setup"):
+		speech_bubble.setup(self)
+
+func _check_need_bubbles() -> void:
+	if not speech_bubble:
+		return
+	if _last_bubble_time < _bubble_cooldown:
+		return
+	
+	# Priority order: critical needs first
+	if hunger < NEED_CRITICAL:
+		_show_need_bubble("I'm starving!")
+		return
+	if health < NEED_CRITICAL:
+		_show_need_bubble("I feel terrible...")
+		return
+	if energy < NEED_CRITICAL:
+		_show_need_bubble("So tired...")
+		return
+	
+	# Low needs (less urgent)
+	if hunger < NEED_LOW and randf() < 0.3:
+		_show_need_bubble("Getting hungry...")
+		return
+	if energy < NEED_LOW and randf() < 0.3:
+		_show_need_bubble("Need some rest...")
+		return
+	if social < NEED_LOW and randf() < 0.2:
+		_show_social_bubble("Feeling lonely...")
+		return
+	
+	# Random thoughts when needs are okay
+	if _thought_timer > 15.0 and randf() < 0.1:
+		_show_random_thought()
+		_thought_timer = 0.0
+
+func _show_need_bubble(message: String) -> void:
+	if speech_bubble and speech_bubble.has_method("show_need"):
+		speech_bubble.show_need(message)
+		_last_bubble_time = 0.0
+
+func _show_social_bubble(message: String) -> void:
+	if speech_bubble and speech_bubble.has_method("show_social"):
+		speech_bubble.show_social(message)
+		_last_bubble_time = 0.0
+
+func _show_alert_bubble(message: String) -> void:
+	if speech_bubble and speech_bubble.has_method("show_alert"):
+		speech_bubble.show_alert(message)
+		_last_bubble_time = 0.0
+
+func _show_random_thought() -> void:
+	if not speech_bubble or not speech_bubble.has_method("show_thought"):
+		return
+	
+	var thoughts: Array[String] = [
+		"Nice day today...",
+		"I wonder what's for dinner",
+		"This village is growing!",
+		"I like it here",
+		"What should I do next?",
+		"The weather looks good",
+		"I hope we're safe here",
+	]
+	
+	# Context-aware thoughts
+	if state == State.WORKING:
+		thoughts.append_array([
+			"Hard work pays off!",
+			"Almost done...",
+			"Getting better at this!",
+		])
+	if happiness > 80:
+		thoughts.append_array([
+			"Life is good!",
+			"I'm so happy!",
+		])
+	if purpose > 70:
+		thoughts.append_array([
+			"I love my job!",
+			"Feeling productive!",
+		])
+	
+	speech_bubble.show_thought(thoughts.pick_random())
+	_last_bubble_time = 0.0
+
+func _count_nearby_villagers() -> int:
+	var count := 0
+	var villagers := get_tree().get_nodes_in_group("villager")
+	for v in villagers:
+		if v == self:
+			continue
+		if global_position.distance_to(v.global_position) < 50.0:
+			count += 1
+	return count
+
+# Public API for needs modification
+func modify_happiness(amount: float) -> void:
+	happiness = clampf(happiness + amount, 0.0, 100.0)
+
+func recover_energy(amount: float) -> void:
+	energy = clampf(energy + amount, 0.0, 100.0)
+
+func modify_health(amount: float) -> void:
+	health = clampf(health + amount, 0.0, 100.0)
+
+func modify_comfort(amount: float) -> void:
+	comfort = clampf(comfort + amount, 0.0, 100.0)
+
+func modify_safety(amount: float) -> void:
+	safety = clampf(safety + amount, 0.0, 100.0)
+
+func get_needs_summary() -> Dictionary:
+	return {
+		"health": health,
+		"hunger": hunger,
+		"energy": energy,
+		"happiness": happiness,
+		"social": social,
+		"comfort": comfort,
+		"safety": safety,
+		"purpose": purpose,
+	}
 
 func _update_task_indicator() -> void:
 	if not task_indicator:

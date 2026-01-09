@@ -60,11 +60,19 @@ class Utility:
 		effect_radius = radius
 		efficiency = eff
 
+# Building Categories
+enum Category { HOUSING, PRODUCTION, COMMUNITY, STORAGE, DEFENSE }
+
+# Building Eras
+enum Era { SURVIVAL, SETTLEMENT, DEVELOPMENT, ADVANCEMENT, CIVILIZATION }
+
 # Building Properties
 var building_id: String = ""
 var building_name: String = ""
 var description: String = ""
 var building_type: String = ""  # Residential, Production, Storage, Defense, Utility
+var category: Category = Category.PRODUCTION
+var era: Era = Era.SURVIVAL
 var max_workers: int = 0
 var production_rate: float = 0.0
 var production_output: String = ""
@@ -77,6 +85,8 @@ var build_requirements: Dictionary = {
 }
 var capabilities: Array[String] = []
 var construction_time: int = 0  # in game days
+var upgrade_from: String = ""  # Building this upgrades from
+var upgrade_to: String = ""  # Building this upgrades to
 
 # Building Type Specific Data
 var residential_data: Residential = null
@@ -451,24 +461,263 @@ func get_building(building_id: String) -> BuildingDefinition:
 
 func _create_building_by_id(building_id: String) -> BuildingDefinition:
 	match building_id:
+		# HOUSING
+		"lean_to": return _create_lean_to()
 		"hut": return _create_hut()
 		"cottage": return _create_cottage()
+		"house": return _create_house()
+		"manor": return _create_manor()
+		# PRODUCTION
+		"campfire": return _create_campfire()
 		"farm": return _create_farm()
+		"farm_plot": return _create_farm()
+		"lumber_mill": return _create_lumber_mill()
+		"quarry": return _create_quarry()
 		"mill": return _create_mill()
 		"blacksmith": return _create_blacksmith()
+		"forge": return _create_blacksmith()
 		"stable": return _create_stable()
 		"workshop": return _create_workshop()
-		"granary": return _create_granary()
-		"warehouse": return _create_warehouse()
-		"watchtower": return _create_watchtower()
-		"barracks": return _create_barracks()
-		"temple": return _create_temple()
+		"kitchen": return _create_kitchen()
+		"brewery": return _create_brewery()
+		"tailor": return _create_tailor()
+		# COMMUNITY
 		"shrine": return _create_shrine()
-		"well": return _create_well()
+		"temple": return _create_temple()
+		"meeting_hall": return _create_meeting_hall()
+		"healers_hut": return _create_healers_hut()
+		"school": return _create_school()
 		"library": return _create_library()
 		"bathhouse": return _create_bathhouse()
 		"marketplace": return _create_marketplace()
+		# STORAGE
+		"storage_pit": return _create_storage_pit()
+		"granary": return _create_granary()
+		"warehouse": return _create_warehouse()
+		"treasury": return _create_treasury()
+		# DEFENSE
+		"watchtower": return _create_watchtower()
+		"walls": return _create_walls()
+		"barracks": return _create_barracks()
+		"well": return _create_well()
 		_: return null
+
+# ============== Additional Building Creation Methods ==============
+
+func _create_lean_to() -> BuildingDefinition:
+	var building = BuildingDefinition.new()
+	building.building_id = "lean_to"
+	building.building_name = "Lean-To"
+	building.description = "Temporary shelter for one person"
+	building.building_type = "Residential"
+	building.category = Category.HOUSING
+	building.era = Era.SURVIVAL
+	building.residential_data = Residential.new(1, 0.1, 0.0)
+	building.tech_requirement = ""
+	building.build_requirements = {"ground_type": ["grass", "plains"], "area_needed": 2, "resources": {"wood": 5}}
+	building.upgrade_to = "hut"
+	building.construction_time = 2
+	return building
+
+func _create_house() -> BuildingDefinition:
+	var building = BuildingDefinition.new()
+	building.building_id = "house"
+	building.building_name = "House"
+	building.description = "Comfortable dwelling for a family"
+	building.building_type = "Residential"
+	building.category = Category.HOUSING
+	building.era = Era.DEVELOPMENT
+	building.residential_data = Residential.new(6, 1.5, 0.3)
+	building.tech_requirement = "masonry"
+	building.build_requirements = {"ground_type": ["grass", "plains"], "area_needed": 8, "resources": {"wood": 50, "stone": 40, "clay": 10}}
+	building.upgrade_from = "cottage"
+	building.upgrade_to = "manor"
+	building.construction_time = 15
+	return building
+
+func _create_manor() -> BuildingDefinition:
+	var building = BuildingDefinition.new()
+	building.building_id = "manor"
+	building.building_name = "Manor"
+	building.description = "Luxurious estate for distinguished families"
+	building.building_type = "Residential"
+	building.category = Category.HOUSING
+	building.era = Era.CIVILIZATION
+	building.residential_data = Residential.new(10, 2.5, 0.5)
+	building.tech_requirement = "advanced_architecture"
+	building.build_requirements = {"ground_type": ["grass", "plains"], "area_needed": 16, "resources": {"wood": 100, "stone": 80, "clay": 30}}
+	building.upgrade_from = "house"
+	building.construction_time = 25
+	return building
+
+func _create_campfire() -> BuildingDefinition:
+	var building = BuildingDefinition.new()
+	building.building_id = "campfire"
+	building.building_name = "Campfire"
+	building.description = "Cook food and provide warmth"
+	building.building_type = "Production"
+	building.category = Category.PRODUCTION
+	building.era = Era.SURVIVAL
+	building.production_data = Production.new("food", "cooked_food", 1.0, 1.5)
+	building.tech_requirement = ""
+	building.build_requirements = {"ground_type": ["grass", "plains"], "area_needed": 1, "resources": {"wood": 3, "stone": 2}}
+	building.construction_time = 1
+	return building
+
+func _create_lumber_mill() -> BuildingDefinition:
+	var building = BuildingDefinition.new()
+	building.building_id = "lumber_mill"
+	building.building_name = "Lumber Mill"
+	building.description = "Process logs into planks faster"
+	building.building_type = "Production"
+	building.category = Category.PRODUCTION
+	building.era = Era.SETTLEMENT
+	building.production_data = Production.new("wood", "planks", 2.0, 0.8)
+	building.tech_requirement = "woodworking"
+	building.build_requirements = {"ground_type": ["grass", "forest"], "area_needed": 10, "resources": {"wood": 40, "stone": 20}}
+	building.construction_time = 12
+	return building
+
+func _create_quarry() -> BuildingDefinition:
+	var building = BuildingDefinition.new()
+	building.building_id = "quarry"
+	building.building_name = "Quarry"
+	building.description = "Mine stone more efficiently"
+	building.building_type = "Production"
+	building.category = Category.PRODUCTION
+	building.era = Era.SETTLEMENT
+	building.production_data = Production.new("", "stone", 2.5, 1.0)
+	building.tech_requirement = "stoneworking"
+	building.build_requirements = {"ground_type": ["mountain", "hills"], "area_needed": 12, "resources": {"wood": 30, "stone": 10}}
+	building.construction_time = 14
+	return building
+
+func _create_kitchen() -> BuildingDefinition:
+	var building = BuildingDefinition.new()
+	building.building_id = "kitchen"
+	building.building_name = "Kitchen"
+	building.description = "Cook advanced meals for better nutrition"
+	building.building_type = "Production"
+	building.category = Category.PRODUCTION
+	building.era = Era.DEVELOPMENT
+	building.production_data = Production.new("food", "meals", 1.5, 2.0)
+	building.tech_requirement = "cooking"
+	building.build_requirements = {"ground_type": ["grass", "plains"], "area_needed": 6, "resources": {"wood": 25, "stone": 20}}
+	building.construction_time = 10
+	return building
+
+func _create_brewery() -> BuildingDefinition:
+	var building = BuildingDefinition.new()
+	building.building_id = "brewery"
+	building.building_name = "Brewery"
+	building.description = "Make ale for morale boost"
+	building.building_type = "Production"
+	building.category = Category.PRODUCTION
+	building.era = Era.DEVELOPMENT
+	building.production_data = Production.new("food", "ale", 0.8, 1.0)
+	building.tech_requirement = "fermentation"
+	building.build_requirements = {"ground_type": ["grass", "plains"], "area_needed": 8, "resources": {"wood": 35, "stone": 25}}
+	building.construction_time = 12
+	return building
+
+func _create_tailor() -> BuildingDefinition:
+	var building = BuildingDefinition.new()
+	building.building_id = "tailor"
+	building.building_name = "Tailor"
+	building.description = "Make clothes for comfort"
+	building.building_type = "Production"
+	building.category = Category.PRODUCTION
+	building.era = Era.DEVELOPMENT
+	building.production_data = Production.new("fiber", "cloth", 1.0, 1.0)
+	building.tech_requirement = "textiles"
+	building.build_requirements = {"ground_type": ["grass", "plains"], "area_needed": 6, "resources": {"wood": 20, "stone": 15}}
+	building.construction_time = 10
+	return building
+
+func _create_meeting_hall() -> BuildingDefinition:
+	var building = BuildingDefinition.new()
+	building.building_id = "meeting_hall"
+	building.building_name = "Meeting Hall"
+	building.description = "Boosts morale and enables festivals"
+	building.building_type = "Utility"
+	building.category = Category.COMMUNITY
+	building.era = Era.DEVELOPMENT
+	building.utility_data = Utility.new("social", 15.0, 1.2)
+	building.tech_requirement = "leadership"
+	building.build_requirements = {"ground_type": ["grass", "plains"], "area_needed": 12, "resources": {"wood": 50, "stone": 30}}
+	building.construction_time = 18
+	return building
+
+func _create_healers_hut() -> BuildingDefinition:
+	var building = BuildingDefinition.new()
+	building.building_id = "healers_hut"
+	building.building_name = "Healer's Hut"
+	building.description = "Cure disease and heal injuries"
+	building.building_type = "Utility"
+	building.category = Category.COMMUNITY
+	building.era = Era.SETTLEMENT
+	building.utility_data = Utility.new("health", 10.0, 1.0)
+	building.tech_requirement = "medicine"
+	building.build_requirements = {"ground_type": ["grass", "plains"], "area_needed": 4, "resources": {"wood": 15, "stone": 10}}
+	building.construction_time = 8
+	return building
+
+func _create_school() -> BuildingDefinition:
+	var building = BuildingDefinition.new()
+	building.building_id = "school"
+	building.building_name = "School"
+	building.description = "Children learn faster"
+	building.building_type = "Utility"
+	building.category = Category.COMMUNITY
+	building.era = Era.DEVELOPMENT
+	building.utility_data = Utility.new("education", 12.0, 1.0)
+	building.tech_requirement = "education"
+	building.build_requirements = {"ground_type": ["grass", "plains"], "area_needed": 8, "resources": {"wood": 30, "stone": 25}}
+	building.construction_time = 14
+	return building
+
+func _create_storage_pit() -> BuildingDefinition:
+	var building = BuildingDefinition.new()
+	building.building_id = "storage_pit"
+	building.building_name = "Storage Pit"
+	building.description = "Basic storage for 50 resources"
+	building.building_type = "Storage"
+	building.category = Category.STORAGE
+	building.era = Era.SURVIVAL
+	building.storage_data = StorageData.new(50, "general", 0.8)
+	building.tech_requirement = ""
+	building.build_requirements = {"ground_type": ["grass", "plains"], "area_needed": 4, "resources": {"wood": 5, "stone": 5}}
+	building.upgrade_to = "granary"
+	building.construction_time = 3
+	return building
+
+func _create_treasury() -> BuildingDefinition:
+	var building = BuildingDefinition.new()
+	building.building_id = "treasury"
+	building.building_name = "Treasury"
+	building.description = "Store gold and valuables"
+	building.building_type = "Storage"
+	building.category = Category.STORAGE
+	building.era = Era.CIVILIZATION
+	building.storage_data = StorageData.new(500, "gold", 1.0)
+	building.tech_requirement = "trade"
+	building.build_requirements = {"ground_type": ["grass", "plains"], "area_needed": 6, "resources": {"stone": 50, "metal": 20}}
+	building.construction_time = 20
+	return building
+
+func _create_walls() -> BuildingDefinition:
+	var building = BuildingDefinition.new()
+	building.building_id = "walls"
+	building.building_name = "Walls"
+	building.description = "Block predators and enemies"
+	building.building_type = "Defense"
+	building.category = Category.DEFENSE
+	building.era = Era.SETTLEMENT
+	building.defense_data = Defense.new(0, 3.0, 0.0, 0.0)
+	building.tech_requirement = "fortification"
+	building.build_requirements = {"ground_type": ["grass", "plains"], "area_needed": 2, "resources": {"stone": 20, "wood": 5}}
+	building.construction_time = 6
+	return building
 
 # Get all buildings
 func get_all_buildings() -> Dictionary:
@@ -545,3 +794,42 @@ func get_maintenance_info(building_id: String) -> Dictionary:
 		"maintenance_cost": building.maintenance_cost,
 		"description": building.description
 	}
+
+# Get all available building IDs
+func get_all_building_ids() -> Array[String]:
+	return [
+		# Housing (5)
+		"lean_to", "hut", "cottage", "house", "manor",
+		# Production (12)
+		"campfire", "farm", "lumber_mill", "quarry", "mill",
+		"blacksmith", "stable", "workshop", "kitchen", "brewery", "tailor",
+		# Community (8)
+		"shrine", "temple", "meeting_hall", "healers_hut", "school",
+		"library", "bathhouse", "marketplace",
+		# Storage (4)
+		"storage_pit", "granary", "warehouse", "treasury",
+		# Defense (3)
+		"watchtower", "walls", "barracks", "well"
+	]
+
+# Get buildings by era
+func get_buildings_by_era(target_era: Era) -> Array[BuildingDefinition]:
+	var result: Array[BuildingDefinition] = []
+	for id in get_all_building_ids():
+		var building = get_building(id)
+		if building and building.era == target_era:
+			result.append(building)
+	return result
+
+# Get buildings by category
+func get_buildings_by_category(target_category: Category) -> Array[BuildingDefinition]:
+	var result: Array[BuildingDefinition] = []
+	for id in get_all_building_ids():
+		var building = get_building(id)
+		if building and building.category == target_category:
+			result.append(building)
+	return result
+
+# Get total building count
+func get_building_count() -> int:
+	return get_all_building_ids().size()
