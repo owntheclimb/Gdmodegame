@@ -13,8 +13,8 @@ func _process(delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-			var new_zoom := clamp(zoom.x - zoom_speed, min_zoom, max_zoom)
+			var new_zoom: float = clamp(zoom.x - zoom_speed, min_zoom, max_zoom)
 			zoom = Vector2(new_zoom, new_zoom)
 		if event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			var new_zoom := clamp(zoom.x + zoom_speed, min_zoom, max_zoom)
+			var new_zoom: float = clamp(zoom.x + zoom_speed, min_zoom, max_zoom)
 			zoom = Vector2(new_zoom, new_zoom)

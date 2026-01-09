@@ -57,7 +57,7 @@ func save_game() -> void:
 		var blueprint_path := ""
 		var blueprint_data := {}
 		if site is ConstructionSite:
-			var site_blueprint := site.blueprint
+			var site_blueprint: Blueprint = site.blueprint
 			if site_blueprint:
 				if site_blueprint.resource_path != "":
 					blueprint_path = site_blueprint.resource_path
@@ -68,7 +68,7 @@ func save_game() -> void:
 						"costs": site_blueprint.costs,
 						"building_scene_path": site_blueprint.building_scene.resource_path if site_blueprint.building_scene else ""
 					}
-			var build_task_created := site.is_build_task_created() if site.has_method("is_build_task_created") else false
+			var build_task_created: bool = site.is_build_task_created() if site.has_method("is_build_task_created") else false
 			data["construction_sites"].append({
 				"position": [site.global_position.x, site.global_position.y],
 				"blueprint_path": blueprint_path,
@@ -121,8 +121,8 @@ func load_game() -> void:
 	if file == null:
 		push_error("Failed to open save file for reading: %s" % SAVE_PATH)
 		return
-	var content := file.get_as_text()
-	var parsed := JSON.parse_string(content)
+	var content: String = file.get_as_text()
+	var parsed = JSON.parse_string(content)
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return
 
@@ -137,7 +137,7 @@ func load_game() -> void:
 
 	var storage: Storage = get_tree().get_first_node_in_group("storage")
 	if storage:
-		var storage_data := data.get("storage", {})
+		var storage_data = data.get("storage", {})
 		if typeof(storage_data) == TYPE_DICTIONARY:
 			storage.resources = storage_data
 
@@ -147,7 +147,7 @@ func load_game() -> void:
 	villagers = get_tree().get_nodes_in_group("villager")
 	var count := mini(villagers.size(), saved_villagers.size())
 	for i in range(count):
-		var info := saved_villagers[i]
+		var info = saved_villagers[i]
 		if typeof(info) != TYPE_DICTIONARY:
 			continue
 		var saved_position: Vector2 = _as_vector2(info.get("position", null), villagers[i].global_position)
@@ -169,7 +169,7 @@ func _reconcile_villager_count(villagers: Array, target_count: int) -> void:
 	if target_count < 0:
 		target_count = 0
 	for i in range(villagers.size() - 1, target_count - 1, -1):
-		var villager := villagers[i]
+		var villager = villagers[i]
 		if villager and villager is Node:
 			villager.queue_free()
 	if villagers.size() >= target_count:
@@ -211,10 +211,10 @@ func _restore_buildings(saved_buildings: Array) -> void:
 		if typeof(building_data) != TYPE_DICTIONARY:
 			continue
 		var scene_path := _as_string(building_data.get("scene_path", ""))
-		var scene := load(scene_path) if scene_path != "" else DEFAULT_BUILDING_SCENE
+		var scene = load(scene_path) if scene_path != "" else DEFAULT_BUILDING_SCENE
 		if not (scene is PackedScene):
 			scene = DEFAULT_BUILDING_SCENE
-		var instance := scene.instantiate()
+		var instance: Node = scene.instantiate()
 		if instance is Node2D:
 			instance.global_position = _as_vector2(building_data.get("position", null), Vector2.ZERO)
 		var blueprint_path := _as_string(building_data.get("blueprint_path", ""))
@@ -234,10 +234,10 @@ func _restore_resources(saved_resources: Array) -> void:
 			continue
 		var resource_type := _as_string(resource_data.get("type", ""))
 		var scene_path := _as_string(resource_data.get("scene_path", ""))
-		var scene := load(scene_path) if scene_path != "" else RESOURCE_SCENES.get(resource_type, null)
+		var scene = load(scene_path) if scene_path != "" else RESOURCE_SCENES.get(resource_type, null)
 		if not (scene is PackedScene):
 			continue
-		var instance := scene.instantiate()
+		var instance: Node = scene.instantiate()
 		if instance is Node2D:
 			instance.global_position = _as_vector2(resource_data.get("position", null), Vector2.ZERO)
 		var parent := get_tree().current_scene if get_tree().current_scene else get_tree().root
@@ -285,9 +285,9 @@ func _load_blueprint(blueprint_path: String, blueprint_data: Dictionary) -> Blue
 		var loaded := load(blueprint_path)
 		if loaded is Blueprint:
 			return loaded
-	var name_value := blueprint_data.get("name", "")
-	var build_time := blueprint_data.get("build_time", null)
-	var costs := blueprint_data.get("costs", null)
+	var name_value = blueprint_data.get("name", "")
+	var build_time = blueprint_data.get("build_time", null)
+	var costs = blueprint_data.get("costs", null)
 	var building_scene_path := _as_string(blueprint_data.get("building_scene_path", ""))
 	if typeof(name_value) != TYPE_STRING and not _is_number(build_time) and typeof(costs) != TYPE_DICTIONARY:
 		return null

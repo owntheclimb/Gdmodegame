@@ -13,7 +13,7 @@ enum Rarity {
 }
 
 # Resource class
-class Resource:
+class ResourceDef:
 	var name: String
 	var description: String
 	var rarity: int
@@ -41,7 +41,7 @@ class Resource:
 		}
 
 # Dictionary to store resource definitions
-var resources: Dictionary[String, Resource] = {}
+var resources: Dictionary = {}
 
 func _ready() -> void:
 	_initialize_resources()
@@ -49,7 +49,7 @@ func _ready() -> void:
 ## Initialize default resource definitions
 func _initialize_resources() -> void:
 	# Example resources - add more as needed
-	add_resource("wood", Resource.new(
+	add_resource("wood", ResourceDef.new(
 		"Wood",
 		"Common material harvested from trees",
 		Rarity.COMMON,
@@ -57,7 +57,7 @@ func _initialize_resources() -> void:
 		["Axe"]
 	))
 	
-	add_resource("stone", Resource.new(
+	add_resource("stone", ResourceDef.new(
 		"Stone",
 		"Basic building material found in rocks",
 		Rarity.COMMON,
@@ -65,7 +65,7 @@ func _initialize_resources() -> void:
 		["Pickaxe"]
 	))
 	
-	add_resource("copper_ore", Resource.new(
+	add_resource("copper_ore", ResourceDef.new(
 		"Copper Ore",
 		"Valuable ore used for crafting",
 		Rarity.UNCOMMON,
@@ -73,7 +73,7 @@ func _initialize_resources() -> void:
 		["Pickaxe", "Mining_Helmet"]
 	))
 	
-	add_resource("iron_ore", Resource.new(
+	add_resource("iron_ore", ResourceDef.new(
 		"Iron Ore",
 		"Strong ore used for advanced crafting",
 		Rarity.RARE,
@@ -81,7 +81,7 @@ func _initialize_resources() -> void:
 		["Steel_Pickaxe"]
 	))
 	
-	add_resource("mithril", Resource.new(
+	add_resource("mithril", ResourceDef.new(
 		"Mithril",
 		"Legendary ore with magical properties",
 		Rarity.LEGENDARY,
@@ -90,32 +90,32 @@ func _initialize_resources() -> void:
 	))
 
 ## Add or update a resource definition
-func add_resource(resource_id: String, resource: Resource) -> void:
+func add_resource(resource_id: String, resource: ResourceDef) -> void:
 	resources[resource_id] = resource
 	print("Added resource: %s" % resource_id)
 
 ## Get a resource by ID
-func get_resource(resource_id: String) -> Resource:
+func get_resource(resource_id: String) -> ResourceDef:
 	if resource_id in resources:
 		return resources[resource_id]
 	push_error("Resource not found: %s" % resource_id)
 	return null
 
 ## Get all resources
-func get_all_resources() -> Dictionary[String, Resource]:
+func get_all_resources() -> Dictionary:
 	return resources
 
 ## Get resources by rarity level
-func get_resources_by_rarity(rarity: int) -> Array[Resource]:
-	var filtered_resources: Array[Resource] = []
+func get_resources_by_rarity(rarity: int) -> Array:
+	var filtered_resources: Array = []
 	for resource in resources.values():
 		if resource.rarity == rarity:
 			filtered_resources.append(resource)
 	return filtered_resources
 
 ## Get resources that require a specific tool
-func get_resources_by_tool(tool: String) -> Array[Resource]:
-	var filtered_resources: Array[Resource] = []
+func get_resources_by_tool(tool: String) -> Array:
+	var filtered_resources: Array = []
 	for resource in resources.values():
 		if tool in resource.tools_needed:
 			filtered_resources.append(resource)

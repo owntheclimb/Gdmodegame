@@ -27,7 +27,7 @@ class Production:
 		production_rate = rate
 		conversion_ratio = ratio
 
-class Storage:
+class StorageData:
 	var capacity: int = 0
 	var stored_resource: String = ""
 	var efficiency: float = 1.0
@@ -81,7 +81,7 @@ var construction_time: int = 0  # in game days
 # Building Type Specific Data
 var residential_data: Residential = null
 var production_data: Production = null
-var storage_data: Storage = null
+var storage_data: StorageData = null
 var defense_data: Defense = null
 var utility_data: Utility = null
 
@@ -89,7 +89,6 @@ var utility_data: Utility = null
 static var _buildings_database: Dictionary = {}
 
 func _init():
-	super()
 	_initialize_buildings_database()
 
 # Initialize the buildings database with all available buildings
@@ -280,7 +279,7 @@ func _create_granary() -> BuildingDefinition:
 	building.description = "Stores grain and prevents spoilage"
 	building.building_type = "Storage"
 	building.max_workers = 2
-	building.storage_data = Storage.new(500, "grain", 0.95)
+	building.storage_data = StorageData.new(500, "grain", 0.95)
 	building.maintenance_cost = {"wood": 0.1}
 	building.tech_requirement = ""
 	building.build_requirements = {
@@ -299,7 +298,7 @@ func _create_warehouse() -> BuildingDefinition:
 	building.description = "General storage for various goods"
 	building.building_type = "Storage"
 	building.max_workers = 3
-	building.storage_data = Storage.new(1000, "general", 0.9)
+	building.storage_data = StorageData.new(1000, "general", 0.9)
 	building.maintenance_cost = {"wood": 0.2}
 	building.tech_requirement = "storage_01"
 	building.build_requirements = {

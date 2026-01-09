@@ -27,7 +27,7 @@ func _process(_delta: float) -> void:
 
 	var day_night := get_tree().get_first_node_in_group("day_night")
 	if day_night:
-		var ratio := day_night.get_time_ratio()
+		var ratio: float = day_night.get_time_ratio()
 		time_label.text = "Time: %.0f%% %s" % [ratio * 100.0, "Night" if day_night.is_night else "Day"]
 	else:
 		time_label.text = "Time: --"

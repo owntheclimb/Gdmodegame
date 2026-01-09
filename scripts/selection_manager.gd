@@ -21,7 +21,7 @@ func _select_at_position(position: Vector2) -> void:
 	var results := space.intersect_point(query, 10)
 	var candidate: Node2D = null
 	for result in results:
-		var collider := result.collider
+		var collider: Node2D = result.collider as Node2D
 		if collider and collider.is_in_group("villager"):
 			candidate = collider
 			break

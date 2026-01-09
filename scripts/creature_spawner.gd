@@ -45,8 +45,8 @@ func _spawn_creature() -> void:
 func _configure_creature(creature: Node, biome: String) -> void:
 	if not (creature is Creature):
 		return
-	var catalog := _get_catalog_for_biome(biome)
-	var selection := catalog[randi() % catalog.size()]
+	var catalog: Array = _get_catalog_for_biome(biome)
+	var selection: Dictionary = catalog[randi() % catalog.size()]
 	creature.species = selection["species"]
 	creature.temperament = selection["temperament"]
 	creature.max_speed = selection["speed"]
