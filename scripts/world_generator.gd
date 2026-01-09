@@ -189,6 +189,10 @@ func _biome_from_tile(tile_type: int) -> String:
 		_:
 			return "grassland"
 
+func get_biome_at_position(world_position: Vector2) -> String:
+	var tile_type := get_tile_type_world(world_position)
+	return _biome_from_tile(tile_type)
+
 func _get_focus_position() -> Vector2:
 	var villager := get_tree().get_first_node_in_group("villager")
 	if villager and villager is Node2D:

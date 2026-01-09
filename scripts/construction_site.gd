@@ -7,6 +7,7 @@ var remaining_costs: Dictionary = {}
 var remaining_build_time := 0.0
 var _build_task_created := false
 var _delivery_tasks: Dictionary = {}
+var _use_loaded_state := false
 
 @onready var sprite: Sprite2D = $Sprite
 
