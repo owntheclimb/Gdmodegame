@@ -1,8 +1,11 @@
-extends StoneResource
+extends ResourceNode
 
-@onready var sprite: Sprite2D = $Sprite
+@export var stone_amount := 15.0
 
 func _ready() -> void:
+	resource_type = "stone"
+	resource_amount = stone_amount
+	max_resource_amount = stone_amount
 	super._ready()
 	add_to_group("rock")
 	_setup_placeholder_sprite()

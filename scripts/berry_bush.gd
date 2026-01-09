@@ -1,8 +1,11 @@
-extends FoodResource
+extends ResourceNode
 
-@onready var sprite: Sprite2D = $Sprite
+@export var food_amount := 10.0
 
 func _ready() -> void:
+	resource_type = "food"
+	resource_amount = food_amount
+	max_resource_amount = food_amount
 	super._ready()
 	add_to_group("berry_bush")
 	_setup_placeholder_sprite()

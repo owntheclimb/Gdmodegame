@@ -24,18 +24,33 @@ var assigned_task: Task
 var _idle_timer := 0.0
 var _idle_interval := 2.0
 
+# Selection and drag state
+var is_selected := false
+var is_hovered := false
+var _is_being_dragged := false
+var _drag_offset := Vector2.ZERO
+
+# Pregnancy state
+var is_pregnant := false
+
 const TRAIT_DATA := preload("res://resources/traits/trait_data.tres")
 const VILLAGER_SCENE := preload("res://scenes/Villager.tscn")
 
 @onready var drop_detector: Area2D = $DropDetector
 @onready var sprite: Sprite2D = $Sprite
+@onready var selection_ring: Node2D = null
+@onready var task_indicator: TaskIndicator = null
 
 func _ready() -> void:
 	randomize()
 	add_to_group("villager")
 	_setup_placeholder_sprite()
+	_setup_selection_ring()
+	_setup_task_indicator()
 	_initialize_traits()
 	state = State.IDLE
+	# Enable input for this body
+	input_pickable = true
 
 func _physics_process(delta: float) -> void:
 	if state == State.DRAGGED:
@@ -45,6 +60,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	_update_needs(delta)
+	_update_task_indicator()
 
 	match state:
 		State.IDLE:
@@ -191,12 +207,9 @@ func _start_collect(resource: ResourceNode) -> void:
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
-			state = State.DRAGGED
+			start_drag()
 		else:
-			var drop_handled := _handle_drop()
-			if not drop_handled:
-				state = State.IDLE
-				_record_action("scouted_area")
+			end_drag()
 
 func _handle_drop() -> bool:
 	var overlapping_areas := drop_detector.get_overlapping_areas()
@@ -397,6 +410,93 @@ func _setup_placeholder_sprite() -> void:
 	var texture := ImageTexture.create_from_image(image)
 	sprite.texture = texture
 
+func _setup_selection_ring() -> void:
+	# Create selection ring as a child node
+	selection_ring = Node2D.new()
+	selection_ring.name = "SelectionRing"
+	selection_ring.z_index = -1
+	add_child(selection_ring)
+	selection_ring.visible = false
+	selection_ring.set_script(preload("res://scripts/selection_ring.gd"))
+
+func _setup_task_indicator() -> void:
+	# Create task indicator as a child node
+	var indicator := Node2D.new()
+	indicator.name = "TaskIndicator"
+	indicator.z_index = 10
+	indicator.set_script(preload("res://scripts/task_indicator.gd"))
+	add_child(indicator)
+	task_indicator = indicator as TaskIndicator
+
+func _update_task_indicator() -> void:
+	if not task_indicator:
+		return
+	if current_task and current_task != "":
+		var show_progress := state == State.WORKING
+		var progress := 0.0
+		if assigned_task and assigned_task.task_type == "build":
+			var target := _get_task_target_node(assigned_task)
+			if target is ConstructionSite:
+				progress = 1.0 - (target.remaining_build_time / target.blueprint.build_time if target.blueprint else 0.0)
+		task_indicator.set_task(current_task, progress, show_progress)
+	else:
+		task_indicator.clear_task()
+
+func set_selected(value: bool) -> void:
+	is_selected = value
+	if selection_ring:
+		selection_ring.visible = value
+	if value:
+		# Notify HUD about selection
+		var hud := get_tree().get_first_node_in_group("hud")
+		if hud and hud.has_method("show_villager_info"):
+			hud.show_villager_info(self)
+
+func set_hovered(value: bool) -> void:
+	is_hovered = value
+	_update_visual_state()
+
+func _update_visual_state() -> void:
+	if sprite:
+		if _is_being_dragged:
+			sprite.modulate = Color(1.2, 1.2, 1.0, 0.9)
+		elif is_hovered:
+			sprite.modulate = Color(1.1, 1.1, 1.0)
+		else:
+			sprite.modulate = Color.WHITE
+
+func start_drag() -> void:
+	_is_being_dragged = true
+	state = State.DRAGGED
+	_drag_offset = global_position - get_global_mouse_position()
+	_update_visual_state()
+
+func end_drag() -> void:
+	_is_being_dragged = false
+	var drop_handled := _handle_drop()
+	if not drop_handled:
+		state = State.IDLE
+		_record_action("scouted_area")
+	_update_visual_state()
+
+func get_display_name() -> String:
+	var prefix := "Elder " if age >= 50 else ""
+	var name_list := ["Bob", "Alice", "Charlie", "Diana", "Eve", "Frank", "Grace", "Henry"]
+	var name_index := get_instance_id() % name_list.size()
+	return prefix + name_list[name_index]
+
+func get_info_text() -> String:
+	var task_text: String = str(current_task) if current_task else "Idle"
+	var trait_text := ""
+	if traits.size() > 0:
+		var trait_names: Array[String] = []
+		for t in traits:
+			if t and t.display_name:
+				trait_names.append(t.display_name)
+		if trait_names.size() > 0:
+			trait_text = " | Traits: " + ", ".join(trait_names)
+	return "Age: %d | %s | Task: %s%s" % [age, gender, task_text, trait_text]
+
 func _initialize_traits() -> void:
 	if not traits.is_empty():
 		return
@@ -422,13 +522,6 @@ func _is_hydrophobic() -> bool:
 			return true
 	return false
 
-func _get_speed_multiplier() -> float:
-	var multiplier := 1.0
-	for t in traits:
-		if t:
-			multiplier *= t.speed_multiplier
-	return multiplier
-
 func _get_hunger_rate_multiplier() -> float:
 	var multiplier := 1.0
 	for t in traits:
@@ -439,18 +532,48 @@ func _get_hunger_rate_multiplier() -> float:
 func _attempt_reproduction(partner: Node2D) -> void:
 	if not partner:
 		return
-	if not (partner is CharacterBody2D):
+	if not (partner is Villager):
 		return
 	if partner.state != State.ROMANCE:
 		return
 	if get_instance_id() > partner.get_instance_id():
 		return
-	var child := VILLAGER_SCENE.instantiate()
-	child.global_position = (global_position + partner.global_position) * 0.5 + Vector2(randf_range(-8.0, 8.0), randf_range(-8.0, 8.0))
-	child.gender = "Male" if randf() < 0.5 else "Female"
-	child.age = 0
-	child.traits = _merge_traits(traits, partner.traits)
-	get_parent().add_child(child)
+	
+	# Determine mother and father
+	var mother: Villager = self if gender == "Female" else partner as Villager
+	var father: Villager = partner as Villager if gender == "Female" else self
+	
+	# Use romance manager for pregnancy
+	var romance_manager := get_tree().get_first_node_in_group("romance_manager")
+	if romance_manager and romance_manager.has_method("start_pregnancy"):
+		romance_manager.start_pregnancy(mother, father)
+	else:
+		# Fallback: instant baby
+		var child := VILLAGER_SCENE.instantiate()
+		child.global_position = (global_position + partner.global_position) * 0.5 + Vector2(randf_range(-8.0, 8.0), randf_range(-8.0, 8.0))
+		child.gender = "Male" if randf() < 0.5 else "Female"
+		child.age = 0
+		child.traits = _merge_traits(traits, partner.traits)
+		get_parent().add_child(child)
+
+func set_pregnant(value: bool) -> void:
+	is_pregnant = value
+	# Slow down when pregnant
+	if is_pregnant:
+		max_speed *= 0.7
+
+func _get_speed_multiplier() -> float:
+	var multiplier := 1.0
+	for t in traits:
+		if t:
+			multiplier *= t.speed_multiplier
+	# Children move slower
+	if age < 10:
+		multiplier *= 0.6 + (age * 0.04)
+	# Pregnant women move slower
+	if is_pregnant:
+		multiplier *= 0.7
+	return multiplier
 
 func _merge_traits(parent_a: Array, parent_b: Array) -> Array:
 	var combined: Array = []

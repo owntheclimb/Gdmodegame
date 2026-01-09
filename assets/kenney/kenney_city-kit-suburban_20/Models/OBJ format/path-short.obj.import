@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://bpgired81quaa"
+path="res://.godot/imported/path-short.obj-6394c7075ef07ec209da2a6ba56e9e13.mesh"
+
+[deps]
+
+files=["res://.godot/imported/path-short.obj-6394c7075ef07ec209da2a6ba56e9e13.mesh"]
+
+source_file="res://assets/kenney/kenney_city-kit-suburban_20/Models/OBJ format/path-short.obj"
+dest_files=["res://.godot/imported/path-short.obj-6394c7075ef07ec209da2a6ba56e9e13.mesh", "res://.godot/imported/path-short.obj-6394c7075ef07ec209da2a6ba56e9e13.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

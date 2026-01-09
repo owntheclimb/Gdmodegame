@@ -1,37 +1,211 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://scripts/hud.gd" id="1_5tw2h"]
+[ext_resource type="Script" path="res://scripts/hud.gd" id="1_hud"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.1, 0.1, 0.15, 0.85)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.35, 0.25, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [node name="HUD" type="CanvasLayer"]
-script = ExtResource("1_5tw2h")
+script = ExtResource("1_hud")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-anchor_right = 1.0
-anchor_bottom = 0.0
+[node name="ResourcePanel" type="PanelContainer" parent="."]
 offset_left = 10.0
 offset_top = 10.0
+offset_right = 160.0
+offset_bottom = 130.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBox" type="VBoxContainer" parent="ResourcePanel"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="ResourcePanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
+theme_override_font_sizes/font_size = 16
+text = "Resources"
+horizontal_alignment = 1
+
+[node name="FoodRow" type="HBoxContainer" parent="ResourcePanel/VBox"]
+layout_mode = 2
+
+[node name="Icon" type="Label" parent="ResourcePanel/VBox/FoodRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.5, 0.5, 1)
+text = "Food:"
+
+[node name="Value" type="Label" parent="ResourcePanel/VBox/FoodRow"]
+layout_mode = 2
+size_flags_horizontal = 10
+text = "50"
+
+[node name="WoodRow" type="HBoxContainer" parent="ResourcePanel/VBox"]
+layout_mode = 2
+
+[node name="Icon" type="Label" parent="ResourcePanel/VBox/WoodRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.4, 0.2, 1)
+text = "Wood:"
+
+[node name="Value" type="Label" parent="ResourcePanel/VBox/WoodRow"]
+layout_mode = 2
+size_flags_horizontal = 10
+text = "20"
+
+[node name="StoneRow" type="HBoxContainer" parent="ResourcePanel/VBox"]
+layout_mode = 2
+
+[node name="Icon" type="Label" parent="ResourcePanel/VBox/StoneRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+text = "Stone:"
+
+[node name="Value" type="Label" parent="ResourcePanel/VBox/StoneRow"]
+layout_mode = 2
+size_flags_horizontal = 10
+text = "15"
+
+[node name="PopRow" type="HBoxContainer" parent="ResourcePanel/VBox"]
+layout_mode = 2
+
+[node name="Icon" type="Label" parent="ResourcePanel/VBox/PopRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.8, 1, 1)
+text = "Population:"
+
+[node name="Value" type="Label" parent="ResourcePanel/VBox/PopRow"]
+layout_mode = 2
+size_flags_horizontal = 10
+text = "3"
+
+[node name="TimePanel" type="PanelContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -120.0
+offset_top = 10.0
 offset_right = -10.0
-offset_bottom = 0.0
+offset_bottom = 70.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBox" type="VBoxContainer" parent="TimePanel"]
+layout_mode = 2
 
-[node name="Stats" type="Label" parent="MarginContainer/VBoxContainer"]
-text = "Health: --  Hunger: --  Task: --"
+[node name="DayLabel" type="Label" parent="TimePanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
+theme_override_font_sizes/font_size = 18
+text = "Day 1"
+horizontal_alignment = 1
 
-[node name="Storage" type="Label" parent="MarginContainer/VBoxContainer"]
-text = "Storage Food: --"
+[node name="TimeLabel" type="Label" parent="TimePanel/VBox"]
+layout_mode = 2
+text = "12:00 PM"
+horizontal_alignment = 1
 
-[node name="Time" type="Label" parent="MarginContainer/VBoxContainer"]
-text = "Time: --"
+[node name="VillagerPanel" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -150.0
+offset_right = 250.0
+offset_bottom = -10.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="Story" type="Label" parent="MarginContainer/VBoxContainer"]
-text = "Story: --"
+[node name="VBox" type="VBoxContainer" parent="VillagerPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
 
-[node name="Quests" type="Label" parent="MarginContainer/VBoxContainer"]
-text = "Quests: --"
+[node name="NameLabel" type="Label" parent="VillagerPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
+theme_override_font_sizes/font_size = 16
+text = "Villager Name"
 
-[node name="Factions" type="Label" parent="MarginContainer/VBoxContainer"]
-text = "Factions: --"
+[node name="InfoLabel" type="Label" parent="VillagerPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+text = "Female, Age 25"
 
-[node name="World" type="Label" parent="MarginContainer/VBoxContainer"]
-text = "Biome: --"
+[node name="TaskLabel" type="Label" parent="VillagerPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.9, 0.7, 1)
+text = "Task: Gathering Wood"
+
+[node name="HealthLabel" type="Label" parent="VillagerPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Health"
+
+[node name="HealthBar" type="ProgressBar" parent="VillagerPanel/VBox"]
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="HungerLabel" type="Label" parent="VillagerPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Hunger"
+
+[node name="HungerBar" type="ProgressBar" parent="VillagerPanel/VBox"]
+layout_mode = 2
+max_value = 100.0
+value = 80.0
+show_percentage = false
+
+[node name="ControlsPanel" type="PanelContainer" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -60.0
+offset_right = 150.0
+offset_bottom = -10.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBox" type="VBoxContainer" parent="ControlsPanel"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="ControlsPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
+text = "Controls"
+horizontal_alignment = 1
+
+[node name="Line1" type="Label" parent="ControlsPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "WASD/Arrows: Move Camera | Scroll: Zoom"
+horizontal_alignment = 1
+
+[node name="Line2" type="Label" parent="ControlsPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Click: Select Villager | Drag: Move Villager"
+horizontal_alignment = 1
+
+[node name="MinimapContainer" type="SubViewportContainer" parent="."]
+visible = false
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -170.0
+offset_top = -170.0
+offset_right = -10.0
+offset_bottom = -10.0

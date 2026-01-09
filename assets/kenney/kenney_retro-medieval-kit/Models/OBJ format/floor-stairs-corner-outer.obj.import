@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://dpa22y8ckbv5"
+path="res://.godot/imported/floor-stairs-corner-outer.obj-43fd1d2f93e345728a93e1b48bd84e08.mesh"
+
+[deps]
+
+files=["res://.godot/imported/floor-stairs-corner-outer.obj-43fd1d2f93e345728a93e1b48bd84e08.mesh"]
+
+source_file="res://assets/kenney/kenney_retro-medieval-kit/Models/OBJ format/floor-stairs-corner-outer.obj"
+dest_files=["res://.godot/imported/floor-stairs-corner-outer.obj-43fd1d2f93e345728a93e1b48bd84e08.mesh", "res://.godot/imported/floor-stairs-corner-outer.obj-43fd1d2f93e345728a93e1b48bd84e08.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

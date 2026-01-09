@@ -9,17 +9,25 @@ var _build_task_created := false
 var _delivery_tasks: Dictionary = {}
 var _use_loaded_state := false
 
+# Visual construction stages
+var _construction_stage := 0  # 0=foundation, 1=walls, 2=roof, 3=complete
+var _stage_node: Node2D = null
+
 @onready var sprite: Sprite2D = $Sprite
 
 func _ready() -> void:
 	add_to_group("construction_site")
 	_setup_placeholder_sprite()
+	_setup_construction_visuals()
 	if _use_loaded_state:
 		_apply_loaded_tasks()
 		return
 	if blueprint:
 		_setup_from_blueprint()
 		_create_resource_tasks()
+
+func _process(_delta: float) -> void:
+	_update_construction_visuals()
 
 func apply_loaded_state(saved_blueprint: Blueprint, saved_costs: Dictionary, saved_time: float, build_task_created := false) -> void:
 	_use_loaded_state = true
@@ -56,6 +64,7 @@ func perform_build_step(work_amount: float) -> void:
 	if remaining_build_time <= 0.0:
 		return
 	remaining_build_time = maxf(remaining_build_time - work_amount, 0.0)
+	_update_construction_stage()
 	if remaining_build_time <= 0.0:
 		_complete_construction()
 
@@ -64,6 +73,7 @@ func _setup_from_blueprint() -> void:
 	remaining_build_time = blueprint.build_time
 	_build_task_created = false
 	_delivery_tasks.clear()
+	_construction_stage = 0
 
 func _create_resource_tasks() -> void:
 	var task_board := _get_task_board()
@@ -144,3 +154,80 @@ func _setup_placeholder_sprite() -> void:
 	image.fill(Color(0.6, 0.45, 0.2))
 	var texture := ImageTexture.create_from_image(image)
 	sprite.texture = texture
+
+func _setup_construction_visuals() -> void:
+	_stage_node = Node2D.new()
+	_stage_node.name = "ConstructionVisuals"
+	add_child(_stage_node)
+	_update_construction_stage()
+
+func _update_construction_stage() -> void:
+	if not blueprint:
+		return
+	var total_time := blueprint.build_time
+	var elapsed := total_time - remaining_build_time
+	var progress := elapsed / total_time if total_time > 0 else 1.0
+	
+	var new_stage := 0
+	if progress >= 0.75:
+		new_stage = 3  # Nearly complete - roof
+	elif progress >= 0.4:
+		new_stage = 2  # Walls
+	elif progress > 0:
+		new_stage = 1  # Foundation started
+	
+	if new_stage != _construction_stage:
+		_construction_stage = new_stage
+
+func _update_construction_visuals() -> void:
+	queue_redraw()
+
+func _draw() -> void:
+	# Draw construction stage visuals
+	var base_color := Color(0.5, 0.35, 0.2)
+	
+	match _construction_stage:
+		0:  # Just foundation outline
+			draw_rect(Rect2(-12, -8, 24, 16), base_color, false, 2.0)
+			# Draw resource piles if waiting for resources
+			if not remaining_costs.is_empty():
+				_draw_waiting_resources()
+		1:  # Foundation filled
+			draw_rect(Rect2(-12, -8, 24, 16), base_color)
+			draw_rect(Rect2(-12, -8, 24, 16), Color.WHITE, false, 1.0)
+		2:  # Walls going up
+			draw_rect(Rect2(-12, -8, 24, 16), base_color)
+			# Draw partial walls
+			draw_rect(Rect2(-12, -16, 4, 8), Color(0.6, 0.45, 0.25))
+			draw_rect(Rect2(8, -16, 4, 8), Color(0.6, 0.45, 0.25))
+			# Scaffolding lines
+			draw_line(Vector2(-14, -16), Vector2(14, -16), Color(0.4, 0.3, 0.2), 1.0)
+		3:  # Nearly complete - roof frame
+			draw_rect(Rect2(-12, -8, 24, 16), base_color)
+			draw_rect(Rect2(-12, -20, 24, 12), Color(0.6, 0.45, 0.25))
+			# Roof outline
+			var roof_points: PackedVector2Array = [
+				Vector2(0, -28),
+				Vector2(-14, -18),
+				Vector2(14, -18)
+			]
+			draw_polyline(roof_points, Color(0.5, 0.35, 0.15), 2.0)
+	
+	# Draw progress bar above
+	if _build_task_created and blueprint:
+		var progress := 1.0 - (remaining_build_time / blueprint.build_time)
+		var bar_width := 20.0
+		var bar_y := -32.0
+		draw_rect(Rect2(-bar_width/2, bar_y, bar_width, 4), Color(0.2, 0.2, 0.2, 0.8))
+		draw_rect(Rect2(-bar_width/2, bar_y, bar_width * progress, 4), Color(0.4, 0.7, 0.3))
+
+func _draw_waiting_resources() -> void:
+	var offset_x := -8.0
+	for resource in remaining_costs.keys():
+		var color := Color.WHITE
+		match resource:
+			"wood": color = Color(0.6, 0.4, 0.2)
+			"stone": color = Color(0.5, 0.5, 0.6)
+			"food": color = Color(0.8, 0.4, 0.4)
+		draw_circle(Vector2(offset_x, -14), 4, color)
+		offset_x += 10.0

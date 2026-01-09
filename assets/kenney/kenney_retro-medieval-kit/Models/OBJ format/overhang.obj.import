@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://2qa4gpl4h0va"
+path="res://.godot/imported/overhang.obj-5b827906f63b8a55a3aabd2dc68fdba6.mesh"
+
+[deps]
+
+files=["res://.godot/imported/overhang.obj-5b827906f63b8a55a3aabd2dc68fdba6.mesh"]
+
+source_file="res://assets/kenney/kenney_retro-medieval-kit/Models/OBJ format/overhang.obj"
+dest_files=["res://.godot/imported/overhang.obj-5b827906f63b8a55a3aabd2dc68fdba6.mesh", "res://.godot/imported/overhang.obj-5b827906f63b8a55a3aabd2dc68fdba6.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

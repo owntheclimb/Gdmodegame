@@ -205,6 +205,11 @@ func _apply_seed(new_seed: int) -> void:
 func get_seed() -> int:
 	return _world_seed
 
+func get_map_bounds() -> Rect2:
+	var world_width := map_width * tile_size
+	var world_height := map_height * tile_size
+	return Rect2(0, 0, world_width, world_height)
+
 func set_seed(new_seed: int) -> void:
 	_apply_seed(new_seed)
 	if tile_map:

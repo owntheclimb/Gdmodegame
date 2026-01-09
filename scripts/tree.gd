@@ -1,12 +1,11 @@
-extends WoodResource
+extends ResourceNode
 
 @export var wood_amount := 20.0
-
-@onready var sprite: Sprite2D = $Sprite
 
 func _ready() -> void:
 	resource_type = "wood"
 	resource_amount = wood_amount
+	max_resource_amount = wood_amount
 	super._ready()
 	add_to_group("tree")
 	_setup_placeholder_sprite()

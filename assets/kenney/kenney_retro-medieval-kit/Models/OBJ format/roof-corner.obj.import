@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://bso844tmmty8b"
+path="res://.godot/imported/roof-corner.obj-7bb5fa2d3c06e337ab7b3c312fb9367a.mesh"
+
+[deps]
+
+files=["res://.godot/imported/roof-corner.obj-7bb5fa2d3c06e337ab7b3c312fb9367a.mesh"]
+
+source_file="res://assets/kenney/kenney_retro-medieval-kit/Models/OBJ format/roof-corner.obj"
+dest_files=["res://.godot/imported/roof-corner.obj-7bb5fa2d3c06e337ab7b3c312fb9367a.mesh", "res://.godot/imported/roof-corner.obj-7bb5fa2d3c06e337ab7b3c312fb9367a.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

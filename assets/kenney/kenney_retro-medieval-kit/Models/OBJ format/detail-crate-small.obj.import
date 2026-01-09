@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://chf8qfup756vw"
+path="res://.godot/imported/detail-crate-small.obj-57ce987b2890378a0bc5a184a4367203.mesh"
+
+[deps]
+
+files=["res://.godot/imported/detail-crate-small.obj-57ce987b2890378a0bc5a184a4367203.mesh"]
+
+source_file="res://assets/kenney/kenney_retro-medieval-kit/Models/OBJ format/detail-crate-small.obj"
+dest_files=["res://.godot/imported/detail-crate-small.obj-57ce987b2890378a0bc5a184a4367203.mesh", "res://.godot/imported/detail-crate-small.obj-57ce987b2890378a0bc5a184a4367203.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false
